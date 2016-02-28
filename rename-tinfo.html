@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>AUTO RENAME</title>
+    <meta charset="shift_jis">
+  </head>
+
+  <body>
+    <button type="button" onclick="sortTinfo()">番組名ソート(番組名のみ表示)</button>
+    <button type="button" onclick="inputJSON()">JSON形式の書換え規則取込)</button>
+    <button type="button" onclick="renameTinfo()">規則に沿って番組名のみリネーム</button>
+    <button type="button" onclick="outputTinfoAndRule()">javascriptソース形式で出力</button>
+    <br><br>
+
+    <div  style="float:right">
+      【番組情報】<br>
+      <textarea class="tinfo" cols="100" rows="60"></textarea>
+    </div>
+
+    <div class="ruleJSON">
+      【書換え規則(JSON)】<br>
+      <textarea class="ruleJSON" cols="50" rows="10"></textarea>
+    </div>
+
+    <div class="ruleList">
+      【書換え規則】<br>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">
+        →
+        <input type="text" size="20"></div>
+
+    </div>
+
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="rename-tinfo.js"></script>
+
+  </body>
+</html>
