@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>DIGA RENAMER</title>
+    <meta charset="shift_jis">
+  </head>
+
+  <body>
+    <button type="button" onclick="digaRewrite()">番組名書換え開始！</button><br><br>
+		<p>画面が表示されたら、右側のフレームでDIGAにログインし、
+		番組編集ボタンを押して、番組名一覧が表示されてから、
+		上記の「番組名書換え開始！」ボタンを押して下さい。</p>
+
+    書換え中の番組：<br>
+    <input type="text" name="BINFO" value="" size="100" maxlength="700"><br>
+
+    <form name="frmVttlEdit" method="POST" target="rightframe" action="http://192.168.0.2/cgi-bin/vttl_edit.cgi" onSubmit="return 1">
+      <input type="hidden" name="cVTE_TITLE" value="" size="60" maxlength="500"><br>
+      <input type="hidden" name="cCMD_VT_OK.x" value="48"><br>
+      <input type="hidden" name="cCMD_VT_OK.y" value="20"><br>
+      <input type="hidden" name="TTL_DRIVE" value="1"><br>
+      <input type="hidden" name="VT_TOPNO" value=""><br>
+      <input type="hidden" name="VT_NO" value=""><br>
+      <input type="hidden" name="VT_CHKMOJIFLG" value="0">
+      <input type="hidden" name="VT_TITLEID" value="">
+    </form>
+
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="diga-tinfo.js"></script>
+    <script src="diga-rename.js"></script>
+
+  </body>
+</html>
