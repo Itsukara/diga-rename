@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>DIGA MANAGER</title>
+<meta http-equiv="Content-Type" content="text/html;charset=SHIFT_JIS">
+</head>
+<body>
+
+<form name="frmVttlEdit" method="POST" target="rightframe" action="http://192.168.0.2/cgi-bin/vttl_edit.cgi" onSubmit="return 1">
+<input type="text" name="cVTE_TITLE" value="世界遺産「追跡取材２０年！よみがえるベトナムの王都」修正後３" size="60" maxlength="510"><br>
+
+<!--
+<input type="image" alt="" name="cCMD_VT_OK" src="fix.png" onClick="return true">
+<input type="image" alt="" name="cCMD_VT_CAN" src="cancel.png" onClick="return true">
+-->
+
+<input type="text" name="cCMD_VT_OK.x" value="48">
+<input type="text" name="cCMD_VT_OK.y" value="20">
+<input type="text" name="TTL_DRIVE" value="1">
+<input type="text" name="VT_TOPNO" value="409">
+<input type="text" name="VT_NO" value="409">
+<input type="text" name="VT_CHKMOJIFLG" value="0">
+<input type="text" name="VT_TITLEID" value="10003864">
+</form>
+
+<button type="button" onclick="setTimeout(digaRewrite, waitMS)">DIGA録画内容書換え開始！</button>
+
+
+<script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script src="diga_tinfo.js"></script>
+<script src="diga_rename.js"></script>
+
+<!--
+	document.frmVttlEdit.submit()
+-->
+
+</body>
+</html>
