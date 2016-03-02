@@ -3,16 +3,41 @@
   <head>
     <title>DIGA RENAMER</title>
     <meta charset="shift_jis">
+    <style>
+      .tinfo {
+        font-size: 80%;
+      }
+    </style>
   </head>
 
   <body>
-    <button type="button" onclick="digaRewrite()">番組名書換え開始！</button><br><br>
-		<p>画面が表示されたら、右側のフレームでDIGAにログインし、
-		番組編集ボタンを押して、番組名一覧が表示されてから、
-		上記の「番組名書換え開始！」ボタンを押して下さい。</p>
+    <div>
+      <pre  style="border: solid black 1px">
+  【使い方】
+  1.各自の環境に合わせ、diga-rename.htmlでDIGAのURLを修正。
+  2.右側のフレームにDIGAのログイン画面が出るのを待ちログイン。
+  3.DIGAの「番組編集ボタン」を押し、番組名一覧の表示を待つ。
+  4.一覧が表示されたら、左側フレームの「開始」ボタンを押す。
+  【注意】
+  ・途中で中止する際は、「中止」ボタンを押してください。
+  ・中止後に再度開始する場合は、最初の番組から開始します。
+  ・DIGA待ち時間(秒)は、変えることができます。
+    (数字入力後にTabキーかEnterキーを押す)</pre>
+    </div>
+    DIGA待ち時間(秒)：<input type="text" name="waitsec" value="8" size="5" onchange="updateRaminTime()">
+    <button type="button" onclick="digaRewriteStart()">開始</button>　
+    <button type="button" onclick="digaRwriteStop()">中止</button><br><br>
 
-    書換え中の番組：<br>
-    <input type="text" name="BINFO" value="" size="100" maxlength="700"><br>
+    全件数：<input type="text" name="numrewrite" value="" size="10"><br>
+    処理中：<input type="text" name="currewrite" value="" size="10">　
+    残時間(秒)：<input type="text" name="remaintime" value="" size="10"<br>
+    <input type="text" name="rewriteinfo" value="" size="100" maxlength="700" style="color: blue"><br>
+    <br>
+
+    <div>
+      【番組情報】<br>
+      <textarea class="tinfo" cols="100" rows="60"></textarea>
+    </div>
 
     <!--
       【注意】下記srcの「http://192.168.0.2」をDIGAのURLで置き換えて下さい。
@@ -29,7 +54,6 @@
     </form>
 
     <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
-    <script src="diga-tinfo.js"></script>
     <script src="diga-rename.js"></script>
 
   </body>

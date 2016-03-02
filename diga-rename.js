@@ -1,32 +1,93 @@
-var binfoF = document.querySelector("input[name='BINFO']")
-var titleF = document.querySelector("input[name='cVTE_TITLE']")
-var topnoF = document.querySelector("input[name='VT_TOPNO']")
-var noF = document.querySelector("input[name='VT_NO']")
+var titleF   = document.querySelector("input[name='cVTE_TITLE']")
+var topnoF   = document.querySelector("input[name='VT_TOPNO']")
+var noF      = document.querySelector("input[name='VT_NO']")
 var titleidF = document.querySelector("input[name='VT_TITLEID']")
+
+var waitsecF  = document.querySelector("input[name='waitsec']")
+var numrwF   = document.querySelector("input[name='numrewrite']")
+var currwF   = document.querySelector("input[name='currewrite']")
+var rwinfoF  = document.querySelector("input[name='rewriteinfo']")
+var tinfoF   = document.querySelector(".tinfo")
+var rmaintF  = document.querySelector("input[name='remaintime']")
+var tinfoAA  = null
+var tinfo    = null
+
+var colOfNo      = 0
+var colOfTitle   = 5
+var colOfTitleID = 6
+
+var stopflag     = false
 
 // 下記により、1番組ごとに、DIGAの処理完了を8000ミリ秒(8秒)待つ。
 // 下記でうまくいかない場合は、値を増やしてください。
 // なお、LAN録画中は、ネット経由の番組名変更ができません。
-var waitMS = 8000
+var waitms = 8000
+var currow = 0
 
-var i = 1
+window.onload = function() {
+  if (localStorage.digaTinfo) {
+    tinfo = localStorage.digaTinfo
+    tinfoF.value = tinfo
+  } else {
+    alert("Title information in localStorage is null!")
+  }
+
+  if (localStorage.digaTinfoAA) {
+    tinfoAA = JSON.parse(localStorage.digaTinfoAA)
+    numrwF.value = tinfoAA.length
+  } else {
+    alert("Title information in localStorage is null!")
+  }
+
+  waitsecF.value = waitms / 1000
+  updateRaminTime()
+}
+
+function updateRaminTime() {
+  var waitsec = parseInt(waitsecF.value)
+  waitms = waitsec * 1000
+  rmaintF.value = ((tinfoAA.length - currow) * waitms/1000) + "秒"
+}
+
+function digaRewriteStart() {
+  currow = 0
+  stopflag = false
+  updateRaminTime()
+  digaRewrite()
+}
+
+function digaRwriteStop() {
+  stopflag = true
+}
 
 function digaRewrite() {
-  var rinfo = tinfo[i]
-  var no = rinfo[0] - 1
-  var title = rinfo[5]
-  var titleid = rinfo[6]
+  if (tinfoAA == null) {
+    alert("Title information in localStorage is null!")
+    return
+  }
+  if (stopflag) {
+    rwinfoF.value = "Stoped!!"
+    currow = 0
+    return
+  }
+  var rinfoA = tinfoAA[currow]
+  var no = rinfoA[colOfNo] - 1
+  var title = rinfoA[colOfTitle]
+  var titleid = rinfoA[colOfTitleID]
 
-  if (rinfo == null ||
-    no == null ||
+  if (!rinfoA ||
+    !no ||
     no < 0 ||
     no > 3000 ||
-    title == null ||
-    titleid == null) {
+    !title ||
+    !titleid) {
     return false
   }
 
-  binfoF.value = rinfo.join(" ")
+  rwinfoF.value = rinfoA.join(" ")
+  currwF.value = currow + 1
+  updateRaminTime()
+
   topnoF.value = no
   noF.value = no
   titleF.value = title
@@ -34,10 +95,12 @@ function digaRewrite() {
 
   document.frmVttlEdit.submit()
 
-  i = i + 1
-  if (i < tinfo.length) {
-    setTimeout(digaRewrite, waitMS)
+  currow = currow + 1
+  if (currow < tinfoAA.length) {
+    setTimeout(digaRewrite, waitms)
   } else {
-    binfoF.value = "番組名書換え完了！"
+    setTimeout(function() {
+      rwinfoF.value = "DIGA Title rewritning has finished!"
+    }, waitms)
   }
 }

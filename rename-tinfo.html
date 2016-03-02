@@ -3,23 +3,76 @@
   <head>
     <title>AUTO RENAME</title>
     <meta charset="shift_jis">
+    <style>
+      .usage {position: absolute; top: 200px; left: 400px; border: solid black 1px;
+              background-color: white}
+      .tinfodiv {float: right}
+      .tinfo {font-size: 100%; }
+      .ruleJSON {font-size: 80%; }
+      input {font-size: 80%; }
+    </style>
   </head>
 
   <body>
+    <div class="usage" style="visibility: hidden">
+      <pre>
+  【使い方】
+   1.Chromeでrename-tinfo.html(本ファイル)を開く。
+  　・「書換え規則」の欄に、前回作った規則のJSON表現が表示される。
+  　　「書換え規則(JSON)」の欄には、このJSON表現が表示される。
+   2. 番組情報の欄に、tinfo.txtの内容をペーストする。
+   3.「番組名ソート(番組名のみ表示)」ボタンを押す。
+  　・番組名をキーに番組情報をソートし、番組名のみ表示される
+   4. 「書換え規則(JSON)」を別途持ってる場合、「書換え規則(JSON)」の欄に
+  　　ペーストして、「書換え規則(JSON)取込」ボタンを押して取り込む。
+   5. 番組名の書換え結果が満足できるまで、下記を繰り返す。
+   　(1)書換え規則欄に、書換え規則を追記・修正
+  　　　・書換え規則は、Javascriptの正規表現で記載
+   　(2)「番組名書換え」ボタンを押す。
+  　　　・書換え規則を上から順に適用した結果が、番組情報に表示される。
+  　　　　(書換え結果の番組情報は、ソートして表示される)
+   6.「書換え終了」ボタンを押す。
+  　・番組情報の欄に、リネーム後の情報が表示される。
+  　・また、【書換え規則(JSON)】欄に、JSON化した書換え規則が表示される。
+  　・これらは、後続ツールで使えるよう、ブラウザのlocalStorageに保管される。
+
+  【注意】
+   書換え規則は、Javascriptの正規表現で記載する。
+   そのため、"["などの特殊文字はバックスラッシュ"\"を付ける必要がある。
+   例えば"[再]"は、"\[再\]"と記載す必要がある。
+
+  【参考】
+   よく使いそうな正規表現：
+     \s      任意のUnicoce空白
+     \S      Unicodeの空白以外の文字
+     \d      任意の数字
+     \D      数字以外
+     ^       行の先頭
+     $       行の最後
+     [...]   角括弧内の任意の1文字
+     [^...]  角括弧内の文字以外の任意の1文字
+     +       直前の項目を1回以上繰り返す
+     *       直前の項目を0回以上繰り返す
+     (...)   グループ化。複数の項目を1つにまとめ、*、+などの対象とする。
+             また、書換え規則の右辺で、このグループを内容を引用できる。
+             引用時は、出現順に、$1、 $2、などで記載。</pre>
+      <button type="button" onclick="usageF.style='visibility: hidden'">説明を隠す</button>
+    </div>
+    <button type="button" onclick="usageF.style='visibility: visible'">説明を表示</button>
     <button type="button" onclick="sortTinfo()">番組名ソート(番組名のみ表示)</button>
-    <button type="button" onclick="inputJSON()">JSON形式の書換え規則取込)</button>
-    <button type="button" onclick="renameTinfo()">規則に沿って番組名のみリネーム</button>
-    <button type="button" onclick="outputTinfoAndRule()">javascriptソース形式で出力</button>
+    <button type="button" onclick="inputJSON()">書換え規則(JSON)取込)</button>
+    <button type="button" onclick="renameTinfo()">番組名書換え</button>
+    <button type="button" onclick="outputTinfoAndRule()">書換え終了</button>
     <br><br>
 
-    <div  style="float:right">
+    <div  class="tinfodiv">
       【番組情報】<br>
       <textarea class="tinfo" cols="100" rows="60"></textarea>
     </div>
 
     <div class="ruleJSON">
       【書換え規則(JSON)】<br>
-      <textarea class="ruleJSON" cols="50" rows="10"></textarea>
+      <textarea class="ruleJSON" cols="70" rows="10"></textarea>
     </div>
 
     <div class="ruleList">

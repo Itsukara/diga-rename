@@ -1,53 +1,35 @@
-// 【使い方】
-// Chromeでrename-tinfo.htmlを開く。
-// 右側のテキストエリアに、ダンプファイルの内容をペーストする。
-// 「番組名ソート(番組名のみ表示)」ボタンを押す。
-// (番組名をキーに番組情報をソートし、番組名のみ表示)
-//
-// 番組名の書換え結果が満足できるまで、下記を繰り返す。
-// 　書換え規則に正規表現で書換えルールを追記・修正。
-// 　「規則に沿って番組名のみリネーム」ボタンを押す。
-//
-// 「javascriptソース形式で出力」ボタンを押す。
-// (これにより、番組情報の欄に、書換え用情報が表示される。
-//  この内容をdiga-tinfo.jsに流し込み、別のツールを使って
-//  DIGAに番組名変更指示を出して、実際に番組名を変える）
-//
-// なお、一度入力した規則は、上記ボタンを押した際に、
-// 【書換え規則(JSON)】欄に表示されるので、後で再利用
-// する予定なら、テキストファイルにペーストして保管のこと。
-// 次回利用時は、【書換え規則(JSON)】欄に、保管していた
-// 書換え規則(JSON)をペーストし、「JSON形式の書換え規則取込」
-// ボタンを押すと、書換え規則の欄に展開される。
-//
-// 【注意】
-// 書換え規則には、Javascriptの正規表現を記載する。
-// そのため"["などの特殊文字はバックスラッシュ"\"を
-// 付ける必要あり。例えば"[再]"は、"\[再\]"と記載する。
-
 "use strict"
 
-var tinfoF = ""
-var tinfoAA = []
-var tinfoHeaderAA = []
+var usageF   = document.querySelector(".usage")
+
+var tinfo         = ""
+var tinfoF        = ""
+var tinfoAA       = []
 var resultTinfoAA = []
-var numCol = 7
-var noCol = 0
-var titleCol = 5
-var sortCol = titleCol;
+var colMax        = 7
+var colOfNo       = 0
+var colOfTitle    = 5
+var colToSort     = colOfTitle;
+
+
+window.onload = function() {
+  if (localStorage.digaRuleJSON) {
+    var ruleJSONF = $("textarea.ruleJSON")[0]
+    ruleJSONF.value = localStorage.digaRuleJSON
+    inputJSON()
+  }
+}
 
 function sortTinfo() {
-  tinfoAA = getTinfoAA()
-  tinfoHeaderAA = tinfoAA.slice(0, 1)
-  tinfoAA = tinfoAA.slice(1)
-  sortCol = titleCol
+  tinfoAA   = getTinfoAA()
+  colToSort = colOfTitle
   tinfoAA.sort(compAA)
   showAA(tinfoAA)
 }
 
 function inputJSON() {
   var ruleJSONF = $("textarea.ruleJSON")[0]
-  var ruleJSON = ruleJSONF.value
+  var ruleJSON  = ruleJSONF.value
   if (ruleJSON == "") {
     return
   }
@@ -58,12 +40,14 @@ function inputJSON() {
     console.log("JSON include too many rules!")
   }
 
-  for (var i = 0; i < Math.min(rule.length, ruleAA.length) ; i++) {
+  for (var i = 0; i < rule.length; i++) {
     var ruleA = ruleAA[i]
+    var rl = rule[i];
+    rl.firstChild.value = "";
+    rl.lastChild.value = "";
     if (ruleA) {
       var r = ruleA[0]
       var l = ruleA[1]
-      var rl = rule[i];
       if (r) {
         rl.firstChild.value = r;
         rl.lastChild.value = l;
@@ -81,6 +65,8 @@ function renameTinfo() {
       applyRule(ruleA, resultAA)
     }
   }
+  colToSort = colOfTitle
+  resultAA.sort(compAA)
   showAA(resultAA)
   resultTinfoAA = resultAA
 }
@@ -88,19 +74,20 @@ function renameTinfo() {
 function outputTinfoAndRule() {
   outputTinfo();
   outputRule();
+  alert("Title information and rewrite rules are saved in localStorage.")
 }
 
 function getTinfoAA() {
   var resultAA = []
   tinfoF = $("textarea.tinfo")[0]
-  var tinfo = tinfoF.value
+  var tinfo  = tinfoF.value
   var tinfoA = tinfo.split("\n")
   var numRinfo = 0
   for (var i = 0; i < tinfoA.length; i++) {
     var rinfo = tinfoA[i]
     rinfo = rinfo.replace(/^[\s\t]+/, "")
     var rinfoA = rinfo.split("\t")
-    if (rinfoA.length != numCol) {
+    if (rinfoA.length != colMax) {
       console.log("line(" + i + ") length != 7 :", rinfoA)
       continue
     }
@@ -110,25 +97,45 @@ function getTinfoAA() {
     // console.log(resultAA)
 }
 
+function equalA(aA, bA) {
+  if (aA.length != bA.length) {
+    return false
+  }
+  for (var i = 0; i < aA.length; i++) {
+    if (aA[i] != bA[i]) {
+      return false
+    }
+  }
+  return true
+}
+
 function outputTinfo() {
-  sortCol = noCol
+  colToSort = colOfNo
+  tinfoAA.sort(compAA)
   resultTinfoAA.sort(compAA)
-  var outputAA = tinfoHeaderAA.concat(resultTinfoAA)
-  var tinfo = "var tinfo = [\n";
-  for (var i = 0; i < outputAA.length; i++) {
-    var rinfoA = outputAA[i];
-    var rinfo = '["'
+
+  var outputAA = []
+  var tinfo = "";
+  for (var i = 0; i < resultTinfoAA.length; i++) {
+    if (equalA(tinfoAA[i], resultTinfoAA[i])) {
+      continue
+    }
+    var rinfoA = resultTinfoAA[i]
+    outputAA.push(rinfoA)
+    var rinfo = ""
     for (var j = 0; j < rinfoA.length; j++) {
       if (j != 0) {
-        rinfo += '","'
+        rinfo += '\t'
       }
       rinfo += rinfoA[j]
     }
-    tinfo += rinfo + '"],\n'
+    tinfo += rinfo + '\n'
   }
-  tinfo += '];\n'
   tinfoF = $("textarea.tinfo")[0]
   tinfoF.value = tinfo
+
+  localStorage.digaTinfo = tinfo
+  localStorage.digaTinfoAA = JSON.stringify(outputAA)
 }
 
 function deepCopyAA(aa) {
@@ -142,8 +149,8 @@ function deepCopyAA(aa) {
 
 
 function compAA(sA, tA) {
-  var a = sA[sortCol]
-  var b = tA[sortCol]
+  var a = sA[colToSort]
+  var b = tA[colToSort]
   if (a < b) return -1
   if (a > b) return 1
   return 0
@@ -153,7 +160,7 @@ function showAA(aa) {
   var result = ""
   for (var i = 0; i < aa.length; i++) {
     // console.log(i, aa[i])
-    result += aa[i][titleCol] + "\n"
+    result += aa[i][colOfTitle] + "\n"
   }
   tinfoF.value = result
 }
@@ -180,7 +187,7 @@ function applyRule(ruleA, aa) {
     var pattern = new RegExp(r, "g")
     for (var i = 0; i < aa.length; i++) {
       var rinfoA = aa[i]
-      rinfoA[titleCol] = rinfoA[titleCol].replace(pattern, l)
+      rinfoA[colOfTitle] = rinfoA[colOfTitle].replace(pattern, l)
     }
   }
 }
@@ -190,4 +197,6 @@ function outputRule() {
   var ruleAA = getRuleAA()
   var ruleJSON = JSON.stringify(ruleAA)
   ruleJSONF.value = ruleJSON
+
+  localStorage.digaRuleJSON = ruleJSON
 }
