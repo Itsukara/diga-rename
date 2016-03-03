@@ -1,36 +1,50 @@
-1.���e
-DIGA�̘^��ԑg����Z�߂ĕύX�����Ƃ��x������c�[���Q�ł��B
+1.内容
+DIGAの録画番組名を纏めて変更する作業を支援するツール群です。
 
-(1) �ԑg���̃_���v�o�͂��x������c�[��
-�@DIGA�̔ԑg�ҏW��ʂ�PF12�������āuDeveloper Tools�v���o���A
-�@Console�ɉ��L�t�@�C�����e���y�[�X�g���邱�ƂŁA�ԑg����
-�@�t�@�C���Ƀ_���v����B�ڍׂ͖{�t�@�C���̐擪�R�����g�Q�ƁB
-�@�E�\���t�@�C���F
-�@�@- diga-dump.js
+(1) 番組名のダンプ出力を支援するツール
+　DIGAの番組編集画面でPF12を押して「Developer Tools」を出し、
+　Consoleに下記ファイル内容をペーストすることで、番組情報を
+　ファイルにダンプする。詳細は本ファイルの先頭コメント参照。
+　・構成ファイル：
+　　- diga-dump.js
 
-(2) �_���v�o�͂ɑ΂���ԑg���ύX���x������c�[��
-�@��L�Ŏ擾�����ԑg�ꗗ�����̔ԑg���ɑ΂��āA
-�@RegExp�ŋL�q�����������K��(����)�����ɓK�p���A���ʂ�\���B
-�@�������K����ǉ��A�C���������ʂ𒼂��Ɋm�F�ł���B
-�@����ɂ��A�F�X�ȏ������K���̑g�ݍ��킹��������B
-�@�܂��A���͂����������K���́A���񗘗p���Ɉ����p�����B
-�@�E�\���t�@�C���F
-�@�@- rename-tinfo.html
-�@�@- rename-tinfo.js
-�@�ڍא����⒍�ӓ_�́A��L�t�@�C���̂����Ahtml���Q�Ƃ̂��ƁB
-�@��Lhtml�ŕ\�������u������\���v�{�^���ł��\�������B
+(2) ダンプ出力に対する番組名変更を支援するツール
+　上記で取得した番組一覧情報内の番組名に対して、
+　記述した書換え規則(複数)を順に適用し、結果を表示。
+　書換え規則を追加、修正した結果を直ぐに確認できる。
+　これにより、色々な書換え規則の組み合わせを試せる。
+　また、入力した書換え規則は、次回利用時に引き継がれる。
+　※各書換え規則は、文字列の単純置換、正規表現での置換を選択可能。
+　・構成ファイル：
+　　- rename-tinfo.html
+　　- rename-tinfo.js
+　詳細説明や注意点は、上記ファイルのうち、htmlを参照のこと。
+　上記htmlで表示される「説明を表示」ボタンでも表示される。
 
-(3) DIGA�ɔԑg���ύX�w�����o���āA���ۂɔԑg������������c�[��
-�@��L(2)�ō쐬�������ʂ��g���A���ۂ�DIGA���̔ԑg��������������B
-�@�i��L(2)�̌��ʂ́A�u���E�U��localStorage�@�\�ň����p�����j
-�@�E�\���t�@�C���F
-�@�@- diga-rename.html
-�@�@- diga-rename-leftF.html
-�@�@- diga-rename.js
-�@�ڍא����⒍�ӓ_�́A��L�t�@�C���̂����Ahtml���Q�Ƃ̂��ƁB
-�@��Lhtml�ŉ�ʂ̍��ɂ��\�������B
+(3) DIGAに番組名変更指示を出して、実際に番組名を書換えるツール
+　上記(2)で作成した結果を使い、実際にDIGA内の番組名を書き換える。
+　（上記(2)の結果は、ブラウザのlocalStorage機能で引き継がれる）
+　・構成ファイル：
+　　- diga-rename.html
+　　- diga-rename-leftF.html
+　　- diga-rename.js
+　詳細説明や注意点は、上記ファイルのうち、htmlを参照のこと。
+　上記htmlで画面の左にも表示される。
 
-3.�Ɛ�
-�iLICENSE.txt���甲���j
-�E���p�҂́A�t�@�C�����e���悭�ǂ݁A���ȐӔC�ł̂����p�����肢�������܂��B
-�E�{�t�@�C���Q�̗��p�Ő����邢���Ȃ錻�ہE���Ɋւ��Ă��ӔC�𕉂��܂���B
+2.注意事項
+・番組ごとに番組IDが付いており、番組書換えではこれを利用するが、
+　「録画モード変換」などの操作を行うと、番組IDが変わるたため、
+　番組名書換えが失敗する（対象番組のみ処理されない）。
+　そのため、ダンプ出力は早めに利用のこと。
+
+・番組に対して「プロテクト設定」が行われている場合も、
+　番組名の書換えはできず、失敗する。
+
+・本プログラムは、Windows 7 + chromeでのみテスト済み。
+
+・DIGAの外付けHDDは付けていないため、テスト未実施。
+
+3.免責
+（LICENSE.txtから抜粋）
+・利用者は、ファイル内容をよく読み、自己責任でのご利用をお願いいたします。
+・本ファイル群の利用で生じるいかなる現象・問題に関しても責任を負いません。

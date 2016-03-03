@@ -66,7 +66,7 @@ function digaRewrite() {
     return
   }
   if (stopflag) {
-    rwinfoF.value = "Stoped!!"
+    rwinfoF.value = "Stopped!!"
     currow = 0
     return
   }

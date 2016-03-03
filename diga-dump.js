@@ -1,19 +1,19 @@
-// �y�g�����z
-//�@ 1.Chrome��DIGA�Ƀ��O�C���B
-//�@ 2.��ʍ����̔ԑg�ҏW�{�^���������āA�ԑg���ꗗ��\���B
-//�@ 3.��ʉ��́uNo.�I��:�v�Z���N�^�ŁA�_���v���J�n��������ʂ�\���B
-//�@�@�i������s��Ȃ��ꍇ�́A�擪�ԑg�ȍ~�̑S�Ă̏����_���v)
-//�@ 4.F12�L�[��������Chrome�́uDeveloper Tools�v��\���B
-//�@ 5.diga-dump.js�̓��e���R�s�[���āA�R���\�[���Ƀy�[�X�g����B
-//�@�@�E�y�[�X�g����Javascript�̃R�[�h���A�\������Ă����ʈȍ~��
-//�@�@�@�S�Ă̔ԑg���������I�ɕ\���E���o���A�t�@�C���utinfo.txt�v�ɕۊǁB
-//�E�r���Œ��~�������ꍇ�́A�R���\�[���ɉ��L��ł����ށB
-//�@digaGetTitlesStop()
-//�E�r���Œ��~�����̂��A���L�̂悤�ɉ��L�R�}���h�ōĎ��s�\�B
-//�@�EdigaGetTitlesStart()�@�@�F�\����ʈȍ~�̔ԑg�������_���v
-//�@�EdigaGetTitlesStart(s)�@ �Fs��ʖڈȍ~�̔ԑg�������_���v
-//�@�EdigaGetTitlesStart(s, e)�Fs��ʖځ`(e-1)��ʖڂ̔ԑg�������_���v
-//�@��s��ʖڂƂ́A�uNo.�I��:�v�Z���N�̉��Ԗڂ��Ƃ�����(0����n�܂�)
+// 【使い方】
+//　 1.ChromeでDIGAにログイン。
+//　 2.画面左側の番組編集ボタンを押して、番組名一覧を表示。
+//　 3.画面下の「No.選択:」セレクタで、ダンプを開始したい画面を表示。
+//　　（これを行わない場合は、先頭番組以降の全ての情報をダンプ)
+//　 4.F12キーを押してChromeの「Developer Tools」を表示。
+//　 5.diga-dump.jsの内容をコピーして、コンソールにペーストする。
+//　　・ペーストしたJavascriptのコードが、表示されている画面以降の
+//　　　全ての番組情報を自動的に表示・抽出し、ファイル「tinfo.txt」に保管。
+//・途中で中止したい場合は、コンソールに下記を打ち込む。
+//　digaGetTitlesStop()
+//・途中で中止したのち、下記のように下記コマンドで再実行可能。
+//　・digaGetTitlesStart()　　：表示画面以降の番組情報ををダンプ
+//　・digaGetTitlesStart(s)　 ：s画面目以降の番組情報ををダンプ
+//　・digaGetTitlesStart(s, e)：s画面目～(e-1)画面目の番組情報ををダンプ
+//　※s画面目とは、「No.選択:」セレクの何番目かとうこと(0から始まる)
 
 var rdoc     = rightframe.document
 var roptions = rdoc.querySelectorAll('select option')
@@ -49,13 +49,13 @@ function digaExtractTitles() {
   }
   var titleid = rdoc.querySelector("input[name='VT_TITLEID']").value.split(":")
 
-  // �ԑg�ꗗ�\���擾
+  // 番組一覧表を取得
   var table = rdoc.querySelectorAll("table table")[2]
   var tbody = table.children[0]
   var rows = tbody.children
 
   var imin = 1
-  // �^�C�g���s�́A���̏����Ŏז��Ȃ̂ŁA�o�͂��Ȃ����ƂƂ����B
+  // タイトル行は、後後の処理で邪魔なので、出力しないこととした。
   // if (selno == selstart) imin = 0
 
   for (var i = imin; i < rows.length; i++) {
@@ -73,7 +73,7 @@ function digaExtractTitles() {
       rinfo += dinfo;
     }
     if (i == 0) {
-      rinfo = rinfo + "\t" + "�ԑgID"
+      rinfo = rinfo + "\t" + "番組ID"
     } else {
       rinfo = rinfo + "\t" + titleid[i - 1]
     }
@@ -185,10 +185,10 @@ function digaGetTitlesStop() {
 }
 
 // Get titles from current screen to last screens
-// digaGetTitlesStart()
+digaGetTitlesStart()
 
 // Get all titles
-digaGetTitlesStart(0)
+//digaGetTitlesStart(0)
 
 // Get titles from screen(s) to screen(e)-1
 // digaGetTitlesStart(s, e)

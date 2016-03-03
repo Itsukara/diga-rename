@@ -1,41 +1,61 @@
-�y2016/03/02�z�@�\��S�ʓI�Ɍ������@(History�Ƃ��Ă͏���)
+【2016/03/03】書換え規則で単純な文字列も使えるよう修正
 
-��diga-dump.js��啝������
-�E�ԑg�ꗗ�̕\�����Ajavascript���琧�䂷��悤�ɂ����B
-�E����ɂ��A�ԑg�ꗗ�̉�ʐ؂�ւ����̎��Ƃ��s�v�ƂȂ�B
-�E�_���v�̏������@�͉��L(diga-dump.js��蔲��)�B
-�@ 1.Chrome��DIGA�Ƀ��O�C���B
-�@ 2.��ʍ����̔ԑg�ҏW�{�^���������āA�ԑg���ꗗ��\���B
-�@ 3.��ʉ��́uNo.�I��:�v�Z���N�^�ŁA�_���v���J�n��������ʂ�\���B
-�@�@�i������s��Ȃ��ꍇ�́A�擪�ԑg�ȍ~�̑S�Ă̏����_���v)
-�@ 4.F12�L�[��������Chrome�́uDeveloper Tools�v��\���B
-�@ 5.diga-dump.js�̓��e���R�s�[���āA�R���\�[���Ƀy�[�X�g����B
-�@�@�E�y�[�X�g����Javascript�̃R�[�h���A�\������Ă����ʈȍ~��
-�@�@�@�S�Ă̔ԑg���������I�ɕ\���E���o���A�t�@�C���utinfo.txt�v�ɕۊǁB
-�E�r���Œ��~�������ꍇ�́A�R���\�[���ɉ��L��ł����ށB
-�@digaGetTitlesStop()
-�E�r���Œ��~�����̂��A���L�̂悤�ɉ��L�R�}���h�ōĎ��s�\�B
-�@�EdigaGetTitlesStart()�@�@�F�\����ʈȍ~�̔ԑg�������_���v
-�@�EdigaGetTitlesStart(s)�@ �Fs��ʖڈȍ~�̔ԑg�������_���v
-�@�EdigaGetTitlesStart(s, e)�Fs��ʖځ`(e-1)��ʖڂ̔ԑg�������_���v
-�@��s��ʖڂƂ́A�uNo.�I��:�v�Z���N�̉��Ԗڂ��Ƃ�����(0����n�܂�)
-�E�^�C�g���s�́A�㑱�c�[���Ŏז��Ȃ̂ŁA�o�͂��Ȃ����ƂƂ����B
+■rename-tinfo.html, js修正
+・各書換え規則に「正規表現かを示すチェックボックス」を追加。
+　(デフォルトではチェックされていない）
+　・チェックされた書換え規則は、正規表現で書換え、
+　　それ以外の規則は、単純な文字列置き換えを行う。
 
-��rename-tinfo.html, js��������
-�E�������K����ԑg����localStorage�ň����p����悤�ɂ����B
-�@�E�O����͂����������K���������p�����B
-�@�E��������̔ԑg���diga-rename.html,js�Ɉ����p�����B
-�E�K����K�p������ɁA�ēx�\�[�g���鏈����ǉ��B
-�E�������̌��ʁA�ύX���Ȃ����̂͏o�͂�}�~�B
-�E�u������\���v�{�^����ǉ��B
-�@�i�ڍׂȐ����́A�{�^���ŕ\�����Ă�����������)
+■文字コードを出来るだけUTF-8に統一
+・これまで、ソースコードにSJISを使ってたが、GitHubで表示する際に
+　文字化けする出の、出来るだけUTF-8に統一。
+・ただし、下記の3ファイルはUTF-8にすると、DIGAでエラーメッセージ
+　が出るため、SJISのままとした。
+　・エラーメッセージ：番組名の書き込みができません。
+　　　　　　　　　　　サポートしていない文字コードです。
+　・SJIS形式のファイル：
+　　・diga-rename.html
+　　・diga-rename.js
+　　・diga-rename-leftF.html
 
-��diga-rename.html,js��������
-�E�������K����ԑg����localStorage�ň����p����悤�ɂ����B
-�E1�̔ԑg������������x�ɍs���ADIGA�̑҂����Ԃ��AGUI����ݒ�\�Ƃ����B
-�@���̒l������������ƁA�c�莞�Ԃ��X�V�����悤�ɂȂ��Ă܂��B
-�E�i����������悤�A�������̑S�����A�������ԍ��A�c�莞�Ԃ̕\����ǉ��B
-�E�ԑg�������̃t���[���ɏk�����ĕ\���B
-�E�����ƂȂ�����r���Œ��~�ł���悤�ɁA�u���~�v�{�^����ǉ��B
-�E�g���������̃t���[���\���B
+【2016/03/02】機能を全面的に見直し　(Historyとしては初版)
+
+■diga-dump.jsを大幅見直し
+・番組一覧の表示を、javascriptから制御するようにした。
+・これにより、番組一覧の画面切り替え等の手作業が不要となる。
+・ダンプの所得方法は下記(diga-dump.jsより抜粋)。
+　 1.ChromeでDIGAにログイン。
+　 2.画面左側の番組編集ボタンを押して、番組名一覧を表示。
+　 3.画面下の「No.選択:」セレクタで、ダンプを開始したい画面を表示。
+　　（これを行わない場合は、先頭番組以降の全ての情報をダンプ)
+　 4.F12キーを押してChromeの「Developer Tools」を表示。
+　 5.diga-dump.jsの内容をコピーして、コンソールにペーストする。
+　　・ペーストしたJavascriptのコードが、表示されている画面以降の
+　　　全ての番組情報を自動的に表示・抽出し、ファイル「tinfo.txt」に保管。
+・途中で中止したい場合は、コンソールに下記を打ち込む。
+　digaGetTitlesStop()
+・途中で中止したのち、下記のように下記コマンドで再実行可能。
+　・digaGetTitlesStart()　　：表示画面以降の番組情報ををダンプ
+　・digaGetTitlesStart(s)　 ：s画面目以降の番組情報ををダンプ
+　・digaGetTitlesStart(s, e)：s画面目～(e-1)画面目の番組情報ををダンプ
+　※s画面目とは、「No.選択:」セレクの何番目かとうこと(0から始まる)
+・タイトル行は、後続ツールで邪魔なので、出力しないこととした。
+
+■rename-tinfo.html, jsを見直し
+・書換え規則や番組情報をlocalStorageで引き継げるようにした。
+　・前回入力した書換え規則が引き継がれる。
+　・書換え後の番組情報がdiga-rename.html,jsに引き継がれる。
+・規則を適用した後に、再度ソートする処理を追加。
+・書換えの結果、変更がないものは出力を抑止。
+・「説明を表示」ボタンを追加。
+　（詳細な説明は、ボタンで表示してご覧ください)
+
+■diga-rename.html,jsを見直し
+・書換え規則や番組情報をlocalStorageで引き継げるようにした。
+・1つの番組を書き換える度に行う、DIGAの待ち時間を、GUIから設定可能とした。
+　この値を書き換えると、残り時間が更新されるようになってます。
+・進捗が分かるよう、書換えの全件数、処理中番号、残り時間の表示を追加。
+・番組情報を左のフレームに縮小して表示。
+・いざとなったら途中で中止できるように、「中止」ボタンを追加。
+・使い方を左のフレーム表示。
 

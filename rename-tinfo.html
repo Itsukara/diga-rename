@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <title>AUTO RENAME</title>
-    <meta charset="shift_jis">
+    <meta charset="utf-8">
     <style>
       .usage {position: absolute; top: 200px; left: 400px; border: solid black 1px;
               background-color: white}
@@ -16,167 +16,200 @@
   <body>
     <div class="usage" style="visibility: hidden">
       <pre>
-  �y�g�����z
-   1.Chrome��rename-tinfo.html(�{�t�@�C��)���J���B
-  �@�E�u�������K���v�̗��ɁA�O�������K����JSON�\�����\�������B
-  �@�@�u�������K��(JSON)�v�̗��ɂ́A����JSON�\�����\�������B
-   2. �ԑg���̗��ɁAtinfo.txt�̓��e���y�[�X�g����B
-   3.�u�ԑg���\�[�g(�ԑg���̂ݕ\��)�v�{�^���������B
-  �@�E�ԑg�����L�[�ɔԑg�����\�[�g���A�ԑg���̂ݕ\�������
-   4. �u�������K��(JSON)�v��ʓr�����Ă�ꍇ�A�u�������K��(JSON)�v�̗���
-  �@�@�y�[�X�g���āA�u�������K��(JSON)�捞�v�{�^���������Ď�荞�ށB
-   5. �ԑg���̏��������ʂ������ł���܂ŁA���L���J��Ԃ��B
-   �@(1)�������K�����ɁA�������K����ǋL�E�C��
-  �@�@�@�E�������K���́AJavascript�̐��K�\���ŋL��
-   �@(2)�u�ԑg���������v�{�^���������B
-  �@�@�@�E�������K�����ォ�珇�ɓK�p�������ʂ��A�ԑg���ɕ\�������B
-  �@�@�@�@(���������ʂ̔ԑg���́A�\�[�g���ĕ\�������)
-   6.�u�������I���v�{�^���������B
-  �@�E�ԑg���̗��ɁA���l�[����̏�񂪕\�������B
-  �@�E�܂��A�y�������K��(JSON)�z���ɁAJSON�������������K�����\�������B
-  �@�E�����́A�㑱�c�[���Ŏg����悤�A�u���E�U��localStorage�ɕۊǂ����B
+  【使い方】
+   1.Chromeでrename-tinfo.html(本ファイル)を開く。
+  　・「書換え規則」の欄に、前回作った規則のJSON表現が表示される。
+  　　「書換え規則(JSON)」の欄には、このJSON表現が表示される。
+   2. 番組情報の欄に、tinfo.txtの内容をペーストする。
+   3.「番組名ソート(番組名のみ表示)」ボタンを押す。
+  　・番組名をキーに番組情報をソートし、番組名のみ表示される
+   4. 「書換え規則(JSON)」を別途持ってる場合、「書換え規則(JSON)」の欄に
+  　　ペーストして、「書換え規則(JSON)取込」ボタンを押して取り込む。
+   5. 番組名の書換え結果が満足できるまで、下記を繰り返す。
+   　(1)書換え規則欄に、書換え規則を追記・修正
+  　　　・書換え規則は、単純な文字列かJavascriptの正規表現で記載。
+  　　　　(正規表現を用いる場合は、チェックボックスにチェックする)
+   　(2)「番組名書換え」ボタンを押す。
+  　　　・書換え規則を上から順に適用した結果が、番組情報に表示される。
+  　　　　(書換え結果の番組情報は、ソートして表示される)
+   6.「書換え終了」ボタンを押す。
+  　・番組情報の欄に、リネーム後の情報が表示される。
+  　・また、【書換え規則(JSON)】欄に、JSON化した書換え規則が表示される。
+  　・これらは、後続ツールで使えるよう、ブラウザのlocalStorageに保管される。
 
-  �y���Ӂz
-   �������K���́AJavascript�̐��K�\���ŋL�ڂ���B
-   ���̂��߁A"["�Ȃǂ̓��ꕶ���̓o�b�N�X���b�V��"\"��t����K�v������B
-   �Ⴆ��"[��]"�́A"\[��\]"�ƋL�ڂ��K�v������B
+  【注意】
+   書換え規則としてJavascriptの正規表現を用いる場合は、
+   "["などの特殊文字はバックスラッシュ"\"を付ける必要がある。
+   例えば"[再]"は、"\[再\]"と記載す必要がある。
 
-  �y�Q�l�z
-   �悭�g�������Ȑ��K�\���F
-     \s      �C�ӂ�Unicoce��
-     \S      Unicode�̋󔒈ȊO�̕���
-     \d      �C�ӂ̐���
-     \D      �����ȊO
-     ^       �s�̐擪
-     $       �s�̍Ō�
-     [...]   �p���ʓ��̔C�ӂ�1����
-     [^...]  �p���ʓ��̕����ȊO�̔C�ӂ�1����
-     +       ���O�̍��ڂ�1��ȏ�J��Ԃ�
-     *       ���O�̍��ڂ�0��ȏ�J��Ԃ�
-     (...)   �O���[�v���B�����̍��ڂ�1�ɂ܂Ƃ߁A*�A+�Ȃǂ̑ΏۂƂ���B
-             �܂��A�������K���̉E�ӂŁA���̃O���[�v����e�����p�ł���B
-             ���p���́A�o�����ɁA$1�A $2�A�ȂǂŋL�ځB</pre>
-      <button type="button" onclick="usageF.style='visibility: hidden'">�������B��</button>
+  【参考】
+   よく使いそうな正規表現：
+     \s      任意のUnicoce空白
+     \S      Unicodeの空白以外の文字
+     \d      任意の数字
+     \D      数字以外
+     ^       行の先頭
+     $       行の最後
+     [...]   角括弧内の任意の1文字
+     [^...]  角括弧内の文字以外の任意の1文字
+     +       直前の項目を1回以上繰り返す
+     *       直前の項目を0回以上繰り返す
+     (...)   グループ化。複数の項目を1つにまとめ、*、+などの対象とする。
+             また、書換え規則の右辺で、このグループを内容を引用できる。
+             引用時は、出現順に、$1、 $2、などで記載。</pre>
+      <button type="button" onclick="usageF.style='visibility: hidden'">説明を隠す</button>
     </div>
-    <button type="button" onclick="usageF.style='visibility: visible'">������\��</button>
-    <button type="button" onclick="sortTinfo()">�ԑg���\�[�g(�ԑg���̂ݕ\��)</button>
-    <button type="button" onclick="inputJSON()">�������K��(JSON)�捞)</button>
-    <button type="button" onclick="renameTinfo()">�ԑg��������</button>
-    <button type="button" onclick="outputTinfoAndRule()">�������I��</button>
+    <button type="button" onclick="usageF.style='visibility: visible'">説明を表示</button>
+    <button type="button" onclick="sortTinfo()">番組名ソート(番組名のみ表示)</button>
+    <button type="button" onclick="inputJSON()">書換え規則(JSON)取込)</button>
+    <button type="button" onclick="renameTinfo()">番組名書換え</button>
+    <button type="button" onclick="outputTinfoAndRule()">書換え終了</button>
     <br><br>
 
     <div  class="tinfodiv">
-      �y�ԑg���z<br>
+      【番組情報】<br>
       <textarea class="tinfo" cols="100" rows="60"></textarea>
     </div>
 
     <div class="ruleJSON">
-      �y�������K��(JSON)�z<br>
+      【書換え規則(JSON)】<br>
       <textarea class="ruleJSON" cols="70" rows="10"></textarea>
     </div>
 
     <div class="ruleList">
-      �y�������K���z<br>
-      <div class="rule"><input type="text" size="20">
-        ��
+      【書換え規則】<br>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-      <div class="rule"><input type="text" size="20">
-        ��
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
         <input type="text" size="20"></div>
-
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
+      <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
+        →
+        <input type="text" size="20"></div>
     </div>
 
     <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>

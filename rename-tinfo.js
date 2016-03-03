@@ -42,15 +42,18 @@ function inputJSON() {
 
   for (var i = 0; i < rule.length; i++) {
     var ruleA = ruleAA[i]
-    var rl = rule[i];
-    rl.firstChild.value = "";
-    rl.lastChild.value = "";
+    var ruleinfo = rule[i].children;
+    ruleinfo[0].value   = "";
+    ruleinfo[1].checked = false;
+    ruleinfo[2].value   = "";
     if (ruleA) {
-      var r = ruleA[0]
-      var l = ruleA[1]
+      var r          = ruleA[0]
+      var regexpflag = ruleA[1]
+      var l          = ruleA[2]
       if (r) {
-        rl.firstChild.value = r;
-        rl.lastChild.value = l;
+        ruleinfo[0].value   = r;
+        ruleinfo[1].checked = regexpflag;
+        ruleinfo[2].value   = l;
       }
     }
   }
@@ -167,13 +170,14 @@ function showAA(aa) {
 
 function getRuleAA() {
   var resultAA = []
-  var rule = $("div.rule")
-  for (var i = 0; i < rule.length; i++) {
-    var rl = rule[i];
-    var r = rl.firstChild.value;
-    var l = rl.lastChild.value;
+  var rules = $("div.rule")
+  for (var i = 0; i < rules.length; i++) {
+    var ruleinfo   = rules[i].children;
+    var r          = ruleinfo[0].value;
+    var regexpflag = ruleinfo[1].checked;
+    var l          = ruleinfo[2].value;
     if (r) {
-      resultAA[i] = [r, l]
+      resultAA[i] = [r, regexpflag, l]
     }
   }
   return resultAA
@@ -181,13 +185,16 @@ function getRuleAA() {
 }
 
 function applyRule(ruleA, aa) {
-  var r = ruleA[0]
-  var l = ruleA[1]
+  var r          = ruleA[0]
+  var regexpflag = ruleA[1]
+  var l          = ruleA[2]
   if (r) {
-    var pattern = new RegExp(r, "g")
+  	if (regexpflag) {
+      r = new RegExp(r)
+    }
     for (var i = 0; i < aa.length; i++) {
       var rinfoA = aa[i]
-      rinfoA[colOfTitle] = rinfoA[colOfTitle].replace(pattern, l)
+      rinfoA[colOfTitle] = rinfoA[colOfTitle].replace(r, l)
     }
   }
 }
