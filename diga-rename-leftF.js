@@ -1,14 +1,25 @@
-var titleF   = document.querySelector("input[name='cVTE_TITLE']")
-var topnoF   = document.querySelector("input[name='VT_TOPNO']")
-var noF      = document.querySelector("input[name='VT_NO']")
-var titleidF = document.querySelector("input[name='VT_TITLEID']")
+function $1(sel) {
+  var r = document.querySelector(sel)
+  if (!r) {
+    console.log("ERROR: result of querySelector(" + sel + "is null")
+  }
+  return r
+}
 
-var waitsecF  = document.querySelector("input[name='waitsec']")
-var numrwF   = document.querySelector("input[name='numrewrite']")
-var currwF   = document.querySelector("input[name='currewrite']")
-var rwinfoF  = document.querySelector("input[name='rewriteinfo']")
-var tinfoF   = document.querySelector(".tinfo")
-var rmaintF  = document.querySelector("input[name='remaintime']")
+var titleF   = $1("input[name='cVTE_TITLE']")
+var topnoF   = $1("input[name='VT_TOPNO']")
+var noF      = $1("input[name='VT_NO']")
+var titleidF = $1("input[name='VT_TITLEID']")
+
+var digaformF= $1("form[name='frmVttlEdit']")
+var digaIPF  = $1("input[name='digaIP']")
+var waitsecF = $1("input[name='waitsec']")
+var numrwF   = $1("input[name='numrewrite']")
+var currwF   = $1("input[name='currewrite']")
+var rwinfoF  = $1("input[name='rewriteinfo']")
+var tinfoF   = $1(".tinfo")
+var rmaintF  = $1("input[name='remaintime']")
+var digIP    = null
 var tinfoAA  = null
 var tinfo    = null
 
@@ -18,6 +29,18 @@ var colOfTitleID = 6
 
 var stopflag     = false
 
+function connectDIGA() {
+  var digaIP = digaIPF.value
+  if (!digaIP) {
+    alert("Input DIGA IP Address at first")
+    return
+  }
+  digaformF.action = "http://" + digaIP + "/cgi-bin/vttl_edit.cgi"
+  parent.rightF.location.replace("http://" + digaIP)
+  localStorage.digaIP = digaIP
+}
+
+
 // 下記により、1番組ごとに、DIGAの処理完了を8000ミリ秒(8秒)待つ。
 // 下記でうまくいかない場合は、値を増やしてください。
 // なお、LAN録画中は、ネット経由の番組名変更ができません。
@@ -25,6 +48,11 @@ var waitms = 8000
 var currow = 0
 
 window.onload = function() {
+  if (localStorage.digaIP) {
+    digaIP = localStorage.digaIP
+    digaIPF.value = digaIP
+  }
+
   if (localStorage.digaTinfo) {
     tinfo = localStorage.digaTinfo
     tinfoF.value = tinfo
@@ -46,7 +74,7 @@ window.onload = function() {
 function updateRaminTime() {
   var waitsec = parseInt(waitsecF.value)
   waitms = waitsec * 1000
-  rmaintF.value = ((tinfoAA.length - currow) * waitms/1000) + "秒"
+  rmaintF.value = ((tinfoAA.length - currow) * waitms/1000)
 }
 
 function digaRewriteStart() {
@@ -85,7 +113,7 @@ function digaRewrite() {
   }
 
   rwinfoF.value = rinfoA.join(" ")
-  currwF.value = currow + 1
+  currwF.value = currow
   updateRaminTime()
 
   topnoF.value = no
@@ -101,6 +129,8 @@ function digaRewrite() {
   } else {
     setTimeout(function() {
       rwinfoF.value = "DIGA Title rewritning has finished!"
+      currwF.value = currow
+      updateRaminTime()
     }, waitms)
   }
 }

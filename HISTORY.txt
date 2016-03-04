@@ -1,3 +1,12 @@
+【2016/03/04】DIGAのIPアドレスをGUIから入力するように修正
+
+・これまで、DIGAのIPアドレスが２つのファイルに埋め込んであったが、
+　GUIから指定するように変更。
+・DIGAのIPアドレスは、次回利用時に引き継がれる(変更は可能)。
+・この修正に際して、新しいファイルを追加する共に、ファイル名も変更。
+　- diga-rename-rightF.html　(追加)
+　- diga-rename-leftF.js　(diga-rename.jsから変更)
+
 【2016/03/03】書換え規則で単純な文字列も使えるよう修正
 
 ■rename-tinfo.html, js修正
@@ -17,6 +26,7 @@
 　　・diga-rename.html
 　　・diga-rename.js
 　　・diga-rename-leftF.html
+
 
 【2016/03/02】機能を全面的に見直し　(Historyとしては初版)
 

@@ -27,8 +27,9 @@ DIGAの録画番組名を纏めて変更する作業を支援するツール群�
 　・構成ファイル：
 　　- diga-rename.html
 　　- diga-rename-leftF.html
-　　- diga-rename.js
-　詳細説明や注意点は、上記ファイルのうち、htmlを参照のこと。
+　　- diga-rename-leftF.js
+　　- diga-rename-rightF.html
+　詳細説明や注意点は、上記ファイルのうち、先頭htmlを参照のこと。
 　上記htmlで画面の左にも表示される。
 
 2.注意事項
