@@ -41,9 +41,9 @@ function connectDIGA() {
 }
 
 
-// ���L�ɂ��A1�ԑg���ƂɁADIGA�̏���������8000�~���b(8�b)�҂B
-// ���L�ł��܂������Ȃ��ꍇ�́A�l�𑝂₵�Ă��������B
-// �Ȃ��ALAN�^�撆�́A�l�b�g�o�R�̔ԑg���ύX���ł��܂���B
+// 下記により、1番組ごとに、DIGAの処理完了を8000ミリ秒(8秒)待つ。
+// 下記でうまくいかない場合は、値を増やしてください。
+// なお、LAN録画中は、ネット経由の番組名変更ができません。
 var waitms = 8000
 var currow = 0
 
