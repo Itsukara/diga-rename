@@ -101,7 +101,9 @@ function digaDumpTitles() {
 
   // write tinfo to file
   var content = tinfo
-  var file_name = "tinfo.txt"
+  var date = new Date()
+  var file_name = "tinfo" + "-" + date.toLocaleDateString() + "-" + date.toLocaleTimeString() + ".txt"
+  file_name.replace(/\/:/g,"-") 
   var blob = new Blob([content], {
     type: "text/text"
   })

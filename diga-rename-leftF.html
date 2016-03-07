@@ -4,18 +4,21 @@
     <title>DIGA RENAMER</title>
     <meta charset="utf-8">
     <style>
-      .tinfo {
-        font-size: 80%;
-      }
       .num {
         text-align: right;
+      }
+      .input, .status, .tinfo { margin-top: 10px;}
+      ul {
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+        font-size: 80%;
       }
     </style>
   </head>
 
   <body>
-    <div>
-      <pre  style="border: solid black 1px">
+    <pre style="border: solid black 1px">
   【使い方】
   1.以下の欄にDIGAのIPアドレスを記入し、「DIGAに接続」ボタンを押す。
   2.右側フレームにDIGAのログイン画面が出るのを待ちログイン。
@@ -27,26 +30,25 @@
   ・「DIGA待ち時間(秒)」は、変えることができます。
     (番組名書換え後の「番組編集」画面の更新を待つ時間を示す。
      入力後にTabキーかEnterキーを押すと残り時間も更新される。)</pre>
-    <div>
-      DIGAのURL：<input type="text" name="digaIP" size="30">
-    　　<button type="button" onclick="connectDIGA()">DIGAに接続</button>
+
+    <div class="input">
+      DIGAのURL：<input type="text" name="digaIP" size="20"> 
+        <button type="button" onclick="connectDIGA()">DIGAに接続</button><br>
+      DIGA待ち時間(秒)：<input type="text" class="num" name="waitsec" value="8" size="1" onchange="updateRaminTime()">　　
+        <button type="button" onclick="digaRewriteStart()">開始</button> 
+        <button type="button" onclick="digaRwriteStop()">中止</button><br>
     </div>
-    <br>
-    <div>
-    DIGA待ち時間(秒)：<input type="text" class="num" name="waitsec" value="8" size="1" onchange="updateRaminTime()">
-    　　<button type="button" onclick="digaRewriteStart()">開始</button>　
-    　<button type="button" onclick="digaRwriteStop()">中止</button><br><br>
-
-    変更対象件数：<input type="text" class="num" name="numrewrite" value="" size="3"><br>
-    変更済の件数：<input type="text" class="num" name="currewrite" value="" size="3">　
-    残り時間(秒)：<input type="text" class="num" name="remaintime" value="" size="4"><br>
-    【変更中番組】<br>
-    <input type="text" name="rewriteinfo" value="" size="100" maxlength="700" style="color: blue"><br>
-    <br>
-
-    <div>
-      【番組名変更対象一覧】<br>
-      <textarea class="tinfo" cols="100" rows="60"></textarea>
+    
+    <div class="status">
+      <label>変更対象件数：<input type="text" class="num" name="numrewrite" value="" size="3"><br>
+      <label>変更済の件数：<input type="text" class="num" name="currewrite" value="" size="3">　
+      <label>残り時間(秒)：<input type="text" class="num" name="remaintime" value="" size="4"><br>
+    </div>
+    
+    <div class="tinfo">
+      【変更対象番組一覧(赤色は処理中)】
+      <ul name='tinfo' style="border: solid black 1px">
+      </ul>
     </div>
 
     <form name="frmVttlEdit" method="POST" target="rightframe" action="http://192.168.0.2/cgi-bin/vttl_edit.cgi" onSubmit="return 1" accept-charset="shift_jis">

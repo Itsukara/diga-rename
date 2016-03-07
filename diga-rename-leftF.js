@@ -1,7 +1,7 @@
 function $1(sel) {
   var r = document.querySelector(sel)
   if (!r) {
-    console.log("ERROR: result of querySelector(" + sel + "is null")
+    alert.log("ERROR: result of querySelector(" + sel + "is null")
   }
   return r
 }
@@ -16,12 +16,11 @@ var digaIPF  = $1("input[name='digaIP']")
 var waitsecF = $1("input[name='waitsec']")
 var numrwF   = $1("input[name='numrewrite']")
 var currwF   = $1("input[name='currewrite']")
-var rwinfoF  = $1("input[name='rewriteinfo']")
-var tinfoF   = $1(".tinfo")
+var tinfoF   = $1("ul[name='tinfo']")
+var tinfoLiA = []
 var rmaintF  = $1("input[name='remaintime']")
 var digIP    = null
 var tinfoAA  = null
-var tinfo    = null
 
 var colOfNo      = 0
 var colOfTitle   = 5
@@ -53,22 +52,39 @@ window.onload = function() {
     digaIPF.value = digaIP
   }
 
-  if (localStorage.digaTinfo) {
-    tinfo = localStorage.digaTinfo
-    tinfoF.value = tinfo
-  } else {
-    alert("Title information in localStorage is null!")
-  }
-
   if (localStorage.digaTinfoAA) {
     tinfoAA = JSON.parse(localStorage.digaTinfoAA)
     numrwF.value = tinfoAA.length
   } else {
     alert("Title information in localStorage is null!")
   }
+  
+  showTinfo()
 
   waitsecF.value = waitms / 1000
   updateRaminTime()
+}
+
+function showTinfo() {
+  tinfoLiA = []
+  for (var i = 0; i < tinfoAA.length; i++) {
+    var linode = document.createElement("li")
+    linode.innerHTML = tinfoAA[i].slice(0,-1).join(" ")
+    tinfoF.appendChild(linode)
+    tinfoLiA[i] = linode
+  }
+}
+
+function setTinfoColor(i, color) {
+  var li = tinfoLiA[i]
+  li.style = "color: " + color
+}
+
+function resetTinfoColor(color) {
+  for (var i = 0; i < tinfoLiA.length; i++) {
+    var li = tinfoLiA[i]
+    li.style = "color: " + color
+  }
 }
 
 function updateRaminTime() {
@@ -80,6 +96,7 @@ function updateRaminTime() {
 function digaRewriteStart() {
   currow = 0
   stopflag = false
+  resetTinfoColor("black")
   updateRaminTime()
   digaRewrite()
 }
@@ -94,7 +111,7 @@ function digaRewrite() {
     return
   }
   if (stopflag) {
-    rwinfoF.value = "Stopped!!"
+    alert("Stopped!!")
     currow = 0
     return
   }
@@ -112,8 +129,13 @@ function digaRewrite() {
     return false
   }
 
-  rwinfoF.value = rinfoA.join(" ")
+  if (currow > 0) {
+    setTinfoColor(currow - 1, "black")
+  }
+  setTinfoColor(currow, "red")
+//  rwinfoF.value = rinfoA.slice(0, -1).join(" ")
   currwF.value = currow
+  
   updateRaminTime()
 
   topnoF.value = no
@@ -128,7 +150,8 @@ function digaRewrite() {
     setTimeout(digaRewrite, waitms)
   } else {
     setTimeout(function() {
-      rwinfoF.value = "DIGA Title rewritning has finished!"
+      resetTinfoColor("blue")
+      alert("DIGA Title rewritning has finished!")
       currwF.value = currow
       updateRaminTime()
     }, waitms)
