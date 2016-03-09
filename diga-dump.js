@@ -15,19 +15,56 @@
 //　・digaGetTitlesStart(s, e)：s画面目～(e-1)画面目の番組情報ををダンプ
 //　※s画面目とは、「No.選択:」セレクの何番目かとうこと(0から始まる)
 
-var rdoc     = rightframe.document
-var roptions = rdoc.querySelectorAll('select option')
-var selcur   = 0
-var selstart = 0
-var selend   = Math.min(roptions.length, 150)
+"use strict"
 
+function errorAlert(msg) {
+  alert(msg)
+  throw msg
+}
+
+function $rone(sel) {
+  var rdoc = typeof rightframe !== "undefined" && rightframe.document
+  var r = rdoc && rdoc.querySelector(sel)
+  if (!r) {
+    console.log('ERROR: document.querySelector("' + sel + '") == null')
+    errorAlert("DIGAにログインし番組編集画面を表示してください。")
+  }
+  return r
+}
+
+function $rall(sel) {
+  var rdoc = typeof rightframe !== "undefined" && rightframe.document
+  var r = rdoc && rdoc.querySelectorAll(sel)
+  if (!r || r.length == 0) {
+    console.log('ERROR: document.querySelectorAll("' + sel + '") == []')
+    errorAlert("DIGAにログインし番組編集画面を表示してください。")
+  }
+  return r
+}
+
+// 「No.選択:」セレクタのoption Nodeの配列
+var selectOptionNodeA = $rall("select option")
+
+// selectOptionNodeAでのインデックス(先頭、最後、表示中、処理中)
+var selstart = 0
+var selend   = selectOptionNodeA.length
+var selcur   = selChecked(selectOptionNodeA)
+var selno    = selcur
+
+// 番組情報
 var tinfo    = ""
+
+// 「No.選択:」セレクタ変更後のDIGAに対する待ち時間
 var waitms   = 6000
-var selno    = selstart
+
+// 処理中止フラグ
 var stopflag = false
 
+// メイン関数（表示中の番組情報取得、次の番組情報表示、終了処理）
 function digaGetTitles() {
-  console.log("digaGetTitles:", selno, "(", roptions[selno].innerHTML, ")")
+  selectOptionNodeA = $rall("select option")
+  console.log("digaGetTitles:", selno, "(", selectOptionNodeA[selno].innerHTML, ")")
+  
   digaExtractTitles()
   selno++
   if (selno <  selend && !stopflag) {
@@ -35,85 +72,77 @@ function digaGetTitles() {
     setTimeout(digaGetTitles, waitms)
   } else {
     digaPostProcessing()
-    console.log("digaGetTitles: FINISHED")
+    console.log("番組情報の取得が終了しました。")
   }
 }
 
+// 表示中の画面から番組情報を抽出
 function digaExtractTitles() {
-  console.log("digaExtractTitles:", selno, "(", roptions[selno].innerHTML, ")")
-  var rdoc = rightframe.document
-  var topno = rdoc.querySelector("input[name='VT_TOPNO']")
-  if (!topno) {
-    console.log("Right frame is wrong.\nPlease display title information in right frame.")
-    return
-  }
-  var titleid = rdoc.querySelector("input[name='VT_TITLEID']").value.split(":")
+  selectOptionNodeA = $rall("select option")
+  console.log("digaExtractTitles:", selno, "(", selectOptionNodeA[selno].innerHTML, ")")
 
   // 番組一覧表を取得
-  var table = rdoc.querySelectorAll("table table")[2]
-  var tbody = table.children[0]
-  var rows = tbody.children
+//  var titleTableNode = $rall("table table")[2]
+//  var tbodyNode = titleTableNode.children[0]
+  var tbodyNode = $rall("tbody")[4]
+  var titleNodeA = tbodyNode.children
+  var titleid = $rone("input[name='VT_TITLEID']").value.split(":")
 
-  var imin = 1
-  // タイトル行は、後後の処理で邪魔なので、出力しないこととした。
-  // if (selno == selstart) imin = 0
+  // タイトル行はスキップする(i = 1)。
+  for (var i = 1; i < titleNodeA.length; i++) {
+    // 未録画部分(titleidが"00000000")は処理しない
+    if (titleid[i - 1] == "00000000") break
 
-  for (var i = imin; i < rows.length; i++) {
-    if (i != imin && titleid[i - 1] == "00000000") {
-      break
-    }
-
-    var tds = rows[i].children
     var rinfo = ""
-    var dinfo = ""
-    for (var j = 1; j < tds.length; j++) {
-      dinfo = tds[j].textContent;
+    var tdNodeA = titleNodeA[i].children
+    // 先頭のチェックボックスはスキップする(j = 1)。
+    for (var j = 1; j < tdNodeA.length; j++) {
+      var dinfo = tdNodeA[j].textContent;
+      // 番組番号(No.)は改行が入るため、クリーンアップ
       dinfo = dinfo.replace(/\n/g, "");
-      if (j != 1) rinfo += "\t"
-      rinfo += dinfo;
+      rinfo += dinfo + "\t";
     }
-    if (i == 0) {
-      rinfo = rinfo + "\t" + "番組ID"
-    } else {
-      rinfo = rinfo + "\t" + titleid[i - 1]
-    }
-    tinfo += rinfo + "\n"
+    
+    // 最後に番組IDを付加
+    rinfo += titleid[i - 1] + "\n"
+    
+    tinfo += rinfo
   }
 }
 
+// 表示中番組情報を切り替え
 function digaShowTitles(selno) {
-  console.log("digaShowTitles:", selno, "(", roptions[selno].innerHTML, ")")
+  selectOptionNodeA = $rall("select option")
+  console.log("digaShowTitles:", selno, "(", selectOptionNodeA[selno].innerHTML, ")")
 
-  var rselvalue = roptions[selno].value
-  var rdoc      = rightframe.document
-  var rform     = rdoc.querySelector('form')
-  var rselect   = rdoc.querySelector('input[name=cCMD_VT_SELECT')
-  var rlistno   = rdoc.querySelector('input[name=cCMD_VT_LISTNO')
+  var selvalue     = selectOptionNodeA[selno].value
+  var digaformNode = $rone('form')
+  var selectNode   = $rone('input[name=cCMD_VT_SELECT')
+  var listnoNode   = $rone('input[name=cCMD_VT_LISTNO')
 
-  rselect.value = rselvalue
-  rlistno.value = rselvalue
-  rform.submit()
+  selectNode.value = selvalue
+  listnoNode.value = selvalue
+  digaformNode.submit()
 }
 
 function digaDumpTitles() {
   console.log("digaDumpTitles:")
-  var rdoc = rightframe.document
-
-  // write tinfo to file
-  var content = tinfo
   var date = new Date()
   var file_name = "tinfo" + "-" + date.toLocaleDateString() + "-" + date.toLocaleTimeString() + ".txt"
   file_name.replace(/\/:/g,"-") 
+
+ dump_to_file(file_name, tinfo, rightframe.document)
+}
+
+function dump_to_file(file_name, content, document) {
   var blob = new Blob([content], {
     type: "text/text"
   })
-  var downloadLink = rdoc.createElement("a");
-
+  var downloadLink = document.createElement("a");
   downloadLink.href     = window.URL.createObjectURL(blob);
   downloadLink.download = file_name;
   downloadLink.target   = '_blank';
-
-  var body = rdoc.querySelector("body")
+  var body = document.querySelector("body")
   body.appendChild(downloadLink);
   downloadLink.click();
   body.removeChild(downloadLink);
@@ -125,37 +154,36 @@ function digaSaveTitles() {
 }
 
 function digaGetTitlesStart(val, options, callback) {
-  rdoc = rightframe.document
-  if (!rdoc.querySelector("input[name='VT_TOPNO']")) {
-    console.log("Right frame is wrong.\nPlease display title information in right frame.")
-    return
-  }
-
-  roptions = rdoc.querySelectorAll('select option')
-  selcur   = selChecked(roptions)
+  selectOptionNodeA = $rall("select option")
+  selcur   = selChecked(selectOptionNodeA)
   selstart = selcur
-  selend   = roptions.length
-
+  selend   = selectOptionNodeA.length
+  waitms   = 6000
+  
   var args = Array.prototype.slice.call(arguments, 0);
   switch(args.length) {
     case 0:
       break
     case 1:
-      selstart = Math.max( parseInt(args[0]), 0)
+      selstart = Math.max(parseInt(args[0]), 0)
       break
     case 2:
       selstart = Math.max(parseInt(args[0]), 0)
       selend   = Math.min(parseInt(args[1]), selend)
+      break
+    case 3:
+      selstart = Math.max(parseInt(args[0]), 0)
+      selend   = Math.min(parseInt(args[1]), selend)
+      waitms   = Math.max(parseInt(args[2]), 1000)
       break
 	default:
 	  console.log("Too many arguments!")
 	  return
   }
 
-  console.log("digaGetTitlesStart: selstart = ", selstart, ", selend =", selend)
-
+  console.log("digaGetTitlesStart: selstart = ", selstart, ", selend =", selend, "waitms =", waitms)
+  
   tinfo    = ""
-  waitms   = 6000
   selno    = selstart
   stopflag = false
 
@@ -167,9 +195,9 @@ function digaGetTitlesStart(val, options, callback) {
   }
 }
 
-function selChecked(roptions) {
-  for (var i = 0; i < roptions.length; i++) {
-    if (roptions[i].selected) {
+function selChecked(selectOptionNodeA) {
+  for (var i = 0; i < selectOptionNodeA.length; i++) {
+    if (selectOptionNodeA[i].selected) {
       return i
     }
   }
@@ -194,3 +222,6 @@ digaGetTitlesStart()
 
 // Get titles from screen(s) to screen(e)-1
 // digaGetTitlesStart(s, e)
+
+// Get titles from screen(s) to screen(e)-1 with waitms
+// digaGetTitlesStart(s, e, waitms)

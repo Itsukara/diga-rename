@@ -32,7 +32,7 @@
      入力後にTabキーかEnterキーを押すと残り時間も更新される。)</pre>
 
     <div class="input">
-      DIGAのURL：<input type="text" name="digaIP" size="20"> 
+      DIGAのIPアドレス：<input type="text" name="digaIP" size="20"> 
         <button type="button" onclick="connectDIGA()">DIGAに接続</button><br>
       DIGA待ち時間(秒)：<input type="text" class="num" name="waitsec" value="8" size="1" onchange="updateRaminTime()">　　
         <button type="button" onclick="digaRewriteStart()">開始</button> 
@@ -40,9 +40,9 @@
     </div>
     
     <div class="status">
-      <label>変更対象件数：<input type="text" class="num" name="numrewrite" value="" size="3"><br>
-      <label>変更済の件数：<input type="text" class="num" name="currewrite" value="" size="3">　
-      <label>残り時間(秒)：<input type="text" class="num" name="remaintime" value="" size="4"><br>
+      <label>変更対象件数：<input type="text" class="num" name="numrewrite" readonly size="3"><br>
+      <label>変更済の件数：<input type="text" class="num" name="currewrite" readonly size="3">　
+      <label>残り時間(秒)：<input type="text" class="num" name="remaintime" readonly size="4"><br>
     </div>
     
     <div class="tinfo">
