@@ -1,4 +1,5 @@
 // 【使い方】
+//　 0.DIGAの電源を入れる。(電源を入れないと直ぐに接続が切れるため)
 //　 1.ChromeでDIGAにログイン。
 //　 2.画面左側の番組編集ボタンを押して、番組名一覧を表示。
 //　 3.画面下の「No.選択:」セレクタで、ダンプを開始したい画面を表示。
@@ -153,36 +154,22 @@ function digaSaveTitles() {
   localStorage.digaDumpTinfo = tinfo
 }
 
-function digaGetTitlesStart(val, options, callback) {
+function digaGetTitlesStart(start, end, ms) {
   selectOptionNodeA = $rall("select option")
   selcur   = selChecked(selectOptionNodeA)
+
+  // デフォルト設定
   selstart = selcur
   selend   = selectOptionNodeA.length
   waitms   = 6000
-  
-  var args = Array.prototype.slice.call(arguments, 0);
-  switch(args.length) {
-    case 0:
-      break
-    case 1:
-      selstart = Math.max(parseInt(args[0]), 0)
-      break
-    case 2:
-      selstart = Math.max(parseInt(args[0]), 0)
-      selend   = Math.min(parseInt(args[1]), selend)
-      break
-    case 3:
-      selstart = Math.max(parseInt(args[0]), 0)
-      selend   = Math.min(parseInt(args[1]), selend)
-      waitms   = Math.max(parseInt(args[2]), 1000)
-      break
-	default:
-	  console.log("Too many arguments!")
-	  return
-  }
 
+  // 引数で指定された場合
+  if (start !== undefined) selstart = Math.max(start, 0)
+  if (end   !== undefined) selend   = Math.min(end, selend)
+  if (ms    !== undefined) waitms   = Math.max(ms, 1000)
   console.log("digaGetTitlesStart: selstart = ", selstart, ", selend =", selend, "waitms =", waitms)
-  
+
+  // digaGetTitles()に対する初期設定
   tinfo    = ""
   selno    = selstart
   stopflag = false
@@ -201,7 +188,7 @@ function selChecked(selectOptionNodeA) {
       return i
     }
   }
-  return 0
+  errorAlert("ERROR: selChecked()")
 }
 
 function digaPostProcessing() {
