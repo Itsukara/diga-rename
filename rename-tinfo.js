@@ -42,8 +42,9 @@ var colMax        = 7
 var colOfNo       = 0
 var colOfTitle    = 5
 
-// 番組情報ソートでキーとなる欄の番号
-var colToSort     = colOfTitle;
+// tinfoAの比較関数
+var compTinfoAbyNo    = genCompTinfoA(colOfNo)
+var compTinfoAbyTitle = genCompTinfoA(colOfTitle)
 
 // 書換え規則の数の初期値
 var ruleInitNum   = 30
@@ -62,7 +63,7 @@ window.onload = function() {
 // 番組情報のソート、表示(番組名をキーとしてソート)
 function sortTinfo() {
   tinfoAA   = getTinfoAA()
-  colToSort = colOfTitle; tinfoAA.sort(compTinfoA)
+  tinfoAA.sort(compTinfoAbyTitle)
   showAA(tinfoAA)
 }
 
@@ -132,7 +133,7 @@ function renameTinfo() {
       applyRule(ruleA, resultAA)
     }
   }
-  colToSort = colOfTitle; resultAA.sort(compTinfoA)
+  resultAA.sort(compTinfoAbyTitle)
   showAA(resultAA)
   resultTinfoAA = resultAA
 }
@@ -193,8 +194,8 @@ function outputTinfo() {
   var outputAA = []
 
   // 書換え前と後の番組情報を番組のNoでソート
-  colToSort = colOfNo; tinfoAA.sort(compTinfoA)
-  colToSort = colOfNo; resultTinfoAA.sort(compTinfoA)
+  tinfoAA.sort(compTinfoAbyNo)
+  resultTinfoAA.sort(compTinfoAbyNo)
 
   // 変更された部分のみを抽出
   for (var i = 0; i < resultTinfoAA.length; i++) {
@@ -221,14 +222,16 @@ function deepCopyAA(aa) {
   return JSON.parse(JSON.stringify(aa))
 }
 
-// tinfoAどうしの比較(比較のキーとなる欄はcolToSort)
-function compTinfoA(tinfoA1, tinfoA2) {
-  var v1 = tinfoA1[colToSort]
-  var v2 = tinfoA2[colToSort]
+// tinfoAどうしの比較をする関数を生成(比較のキーとなる欄はcolToSort)
+function genCompTinfoA(colToSort) {
+  return function(tinfoA1, tinfoA2) {
+    var v1 = tinfoA1[colToSort]
+    var v2 = tinfoA2[colToSort]
 
-  if (v1 < v2) return -1
-  if (v1 > v2) return 1
-  return 0
+    if (v1 < v2) return -1
+    if (v1 > v2) return 1
+    return 0
+  }
 }
 
 // 番組情報のタイトル部分のみを表示

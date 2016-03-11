@@ -1,4 +1,17 @@
-﻿【2016/03/10】diga-dump.jsを微修正
+﻿【2016/03/11】rename-tinfo.jsを微修正(番組情報比較関数のインターフェースを変更)
+
+・変更前
+番組情報のどこを使って比較するかを、グローバル変数を使って関数compAAに伝達
+colToSort = colOfNo; tinfoAA.sort(compAA)
+
+・変更後
+番組情報のどこを使って比較するかを、関数生成時に埋め込み
+var compTinfoAbyTitle = genCompTinfoA(colOfTitle)
+...
+tinfoAA.sort(compTinfoAbyNo)
+※ genCompTinfoAは、関数を生成する関数で、compAAに渡していた値を埋め込む
+
+【2016/03/10】diga-dump.jsを微修正
 
 ・関数digaGetTitlesStartの可変引数処理を、一般的な形に変更。
 　(元々は、Webで少し調べて見つかったコードを流用。
