@@ -1,4 +1,28 @@
-﻿【2016/03/11】rename-tinfo.jsを微修正(番組情報比較関数のインターフェースを変更)
+﻿【2016/03/11(その２)】rename-tinfo.jsを更に微修正(より汎用的なbind()を活用)
+
+・変更前
+番組情報のどこを使って比較するかを、関数生成時に埋め込み
+var compTinfoAbyTitle = genCompTinfoA(colOfTitle)
+...
+tinfoAA.sort(compTinfoAbyTitle)
+...
+function genCompTinfoA(colToSort) {
+  return function(tinfoA1, tinfoA2) {
+  ...
+  }
+}
+
+・変更後
+番組情報のどこを使って比較するかは、bind()で埋め込み(変更前より汎用的)
+var compTinfoAbyTitle = compTinfoA.bind(null, colOfTitle)
+...
+tinfoAA.sort(compTinfoAbyTitle)
+...
+function compTinfoA(colToSort, tinfoA1, tinfoA2) {
+...
+}
+
+【2016/03/11】rename-tinfo.jsを微修正(番組情報比較関数のインターフェースを変更)
 
 ・変更前
 番組情報のどこを使って比較するかを、グローバル変数を使って関数compAAに伝達
@@ -8,8 +32,13 @@ colToSort = colOfNo; tinfoAA.sort(compAA)
 番組情報のどこを使って比較するかを、関数生成時に埋め込み
 var compTinfoAbyTitle = genCompTinfoA(colOfTitle)
 ...
-tinfoAA.sort(compTinfoAbyNo)
-※ genCompTinfoAは、関数を生成する関数で、compAAに渡していた値を埋め込む
+tinfoAA.sort(compTinfoAbyTitle)
+...
+function genCompTinfoA(colToSort) {
+  return function(tinfoA1, tinfoA2) {
+  ...
+  }
+}
 
 【2016/03/10】diga-dump.jsを微修正
 

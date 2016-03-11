@@ -43,8 +43,8 @@ var colOfNo       = 0
 var colOfTitle    = 5
 
 // tinfoAの比較関数
-var compTinfoAbyNo    = genCompTinfoA(colOfNo)
-var compTinfoAbyTitle = genCompTinfoA(colOfTitle)
+var compTinfoAbyNo    = compTinfoA.bind(null, colOfNo)
+var compTinfoAbyTitle = compTinfoA.bind(null, colOfTitle)
 
 // 書換え規則の数の初期値
 var ruleInitNum   = 30
@@ -222,16 +222,14 @@ function deepCopyAA(aa) {
   return JSON.parse(JSON.stringify(aa))
 }
 
-// tinfoAどうしの比較をする関数を生成(比較のキーとなる欄はcolToSort)
-function genCompTinfoA(colToSort) {
-  return function(tinfoA1, tinfoA2) {
-    var v1 = tinfoA1[colToSort]
-    var v2 = tinfoA2[colToSort]
+// tinfoAどうしの比較をする関数(比較のキーとなる欄はcolToSort)
+function compTinfoA(colToSort, tinfoA1, tinfoA2) {
+  var v1 = tinfoA1[colToSort]
+  var v2 = tinfoA2[colToSort]
 
-    if (v1 < v2) return -1
-    if (v1 > v2) return 1
-    return 0
-  }
+  if (v1 < v2) return -1
+  if (v1 > v2) return 1
+  return 0
 }
 
 // 番組情報のタイトル部分のみを表示
