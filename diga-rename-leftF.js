@@ -78,7 +78,7 @@ window.onload = function() {
   showTinfo()
 
   waitsecNode.value = waitms / 1000
-  updateRaminTime()
+  updateStatus()
 }
 
 // 番組情報を表示
@@ -107,7 +107,9 @@ function resetTinfoColor(color) {
 }
 
 // 残り時間(秒)の表示を更新
-function updateRaminTime() {
+function updateStatus() {
+  currewriteNode.value = currentTitleIndex
+
   var waitsec = parseInt(waitsecNode.value)
   if (!waitsec || waitsec < 1 || waitsec > 10) {
     errorAlert("DIGA待ち時間(秒)が不適切です。1～10の値を設定してください。")
@@ -118,11 +120,15 @@ function updateRaminTime() {
 
 // DIGAの番組情報変更を開始(htmlのイベント処理関数)
 function digaRewriteStart() {
-  updateRaminTime()
-  currentTitleIndex = 0
+  var finished = parseInt(currewriteNode.value)
+  if (finished < 0 || finished > tinfoAA.length) {
+    errorAlert("「変更済の件数」欄の値が不正")
+  }
+  currentTitleIndex = finished
+
   stopflag = false
   resetTinfoColor("black")
-  updateRaminTime()
+  updateStatus()
   digaRewrite()
 }
 
@@ -138,7 +144,6 @@ function digaRewrite() {
   }
   if (stopflag) {
     alert("番組名変更を中止しました。")
-    currentTitleIndex = 0
     return
   }
   var rinfoA = tinfoAA[currentTitleIndex]
@@ -156,11 +161,9 @@ function digaRewrite() {
   }
   setTinfoColor(currentTitleIndex, "red")
 
-  currewriteNode.value = currentTitleIndex
-  
-  updateRaminTime()
+  updateStatus()
 
-  // DIGAに番組名変更え指示を出す
+  // DIGAに番組名変更指示を出す
   topnoNode.value = no
   noNode.value = no
   titleNode.value = title
@@ -176,8 +179,7 @@ function digaRewrite() {
     setTimeout(function() {
       resetTinfoColor("blue")
       alert("番組名変更が完了しました。")
-      currewriteNode.value = currentTitleIndex
-      updateRaminTime()
+      updateStatus()
     }, waitms)
   }
 }

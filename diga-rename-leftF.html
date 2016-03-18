@@ -26,7 +26,9 @@
   4.「番組編集」画面が表示されたら、左側フレームの「開始」ボタンを押す。
   【注意】
   ・途中で中止する際は、「中止」ボタンを押してください。
-  ・中止後に再度「開始」する場合、最初の番組名からやり直します。
+  ・中止後に再度「開始」する場合、処理中番組名からやり直します。
+  ・「変更済みの件数」欄の値は書き換え可能です。
+    (書き換えた場合、先頭の変更済み件数分はスキップします)
   ・「DIGA待ち時間(秒)」は、変えることができます。
     (番組名書換え後の「番組編集」画面の更新を待つ時間を示す。
      入力後にTabキーかEnterキーを押すと残り時間も更新される。)</pre>
@@ -34,14 +36,14 @@
     <div class="input">
       DIGAのIPアドレス：<input type="text" name="digaIP" size="20"> 
         <button type="button" onclick="connectDIGA()">DIGAに接続</button><br>
-      DIGA待ち時間(秒)：<input type="text" class="num" name="waitsec" value="8" size="1" onchange="updateRaminTime()">　　
+      DIGA待ち時間(秒)：<input type="number" class="num" name="waitsec" value="8" min="1" max="9" oninput="updateStatus()">　　
         <button type="button" onclick="digaRewriteStart()">開始</button> 
         <button type="button" onclick="digaRwriteStop()">中止</button><br>
     </div>
     
     <div class="status">
       <label>変更対象件数：<input type="text" class="num" name="numrewrite" readonly size="3"><br>
-      <label>変更済の件数：<input type="text" class="num" name="currewrite" readonly size="3">　
+      <label>変更済の件数：<input type="text" class="num" name="currewrite"          size="3">　
       <label>残り時間(秒)：<input type="text" class="num" name="remaintime" readonly size="4"><br>
     </div>
     
