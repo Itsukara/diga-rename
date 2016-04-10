@@ -2,7 +2,7 @@
 
 function errorAlert(msg) {
   alert(msg)
-  throw msg
+  throw new Error(msg)
 }
 
 function $one(sel) {
@@ -88,10 +88,12 @@ function inputRuleJSON() {
 function increaseRules(n) {
   var ruleNodeA     = $all("div.rule")
   var ruleTemplate  = ruleNodeA[0]
+  var newRuleNodes  = document.createDocumentFragment()
   for (var i = ruleNodeA.length; i < n; i++) {
     var newRuleNode = ruleTemplate.cloneNode(true)
-    ruleListNode.appendChild(newRuleNode)
+    newRuleNodes.appendChild(newRuleNode)
   }
+  ruleListNode.appendChild(newRuleNodes)
 }
 
 // 画面上の書換え規則を初期化

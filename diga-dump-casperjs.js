@@ -1,23 +1,141 @@
-// 【使い方】
-//　 0.DIGAの電源を入れる。(電源を入れないと直ぐに接続が切れるため)
-//　 1.ChromeでDIGAにログイン。
-//　 2.画面左側の番組編集ボタンを押して、番組名一覧を表示。
-//　 3.画面下の「No.選択:」セレクタで、ダンプを開始したい画面を表示。
-//　　（これを行わない場合は、先頭番組以降の全ての情報をダンプ)
-//　 4.F12キーを押してChromeの「Developer Tools」を表示。
-//　 5.diga-dump.jsの内容をコピーして、コンソールにペーストする。
-//　　・ペーストしたJavascriptのコードが、表示されている画面以降の
-//　　　全ての番組情報を自動的に表示・抽出し、ファイル「tinfo.txt」に保管。
-//・途中で中止したい場合は、コンソールに下記を打ち込む。
-//　digaGetTitlesStop()
-//・途中で中止したのち、下記のように下記コマンドで再実行可能。
-//　・digaGetTitlesStart()　　：表示画面以降の番組情報ををダンプ
-//　・digaGetTitlesStart(s)　 ：s画面目以降の番組情報ををダンプ
-//　・digaGetTitlesStart(s, e)：s画面目～(e-1)画面目の番組情報ををダンプ
-//　※s画面目とは、「No.選択:」セレクの何番目かとうこと(0から始まる)
+debugger;
+/*
+  CasperJSを使って、DIGAの番組情報を取得するためのスクリプトです。
+  利用に際し、NodeJS、PhantomJS、CasperJSを設定した環境が必要です。
+  これらが整った環境において、下記コマンドで実行開始願います。
+    casperjs diga-dump-casperjs.js
+  
+  なお、利用前に、DIGAのURLとログインパスワードを下記に追記願います。
+*/
 
-"use strict"
+// DIGAのURLとログインパスワード
+var URL = "";
+var PASS = "";
 
+var casper = require("casper").create();
+/*
+var casper = require("casper").create({
+    verbose: true,
+    logLevel: "debug"  
+});
+*/
+
+casper.echo("");
+if (URL === "" || PASS === "") {
+  casper.die("diga-dump-casperjs.js中でDIGAのURLとログインパスワードを記載してから実行願います。");
+}
+
+// PhantomJSのfsモジュール (nodejsのfsと仕様が異なるので要注意)
+var fs = require("fs");
+
+function capture() {
+    var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".png";
+    casper.capture(fname);
+}
+
+function dump_html() {
+    var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".html";
+    fs.write(fname, casper.getHTML().replace(/&lt;/g, "<").replace(/&gt;/g, ">"));
+}
+
+function write_txt(txt) {
+    var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".txt";
+    fs.write(fname, txt, 'w');
+}
+
+// デバッグ用の各種イベント登録
+casper.on('remote.alert', function(msg) {
+  this.echo("REMOTE.ALERT: " + msg);
+});
+
+casper.on('remote.message', function(msg) {
+  this.echo("REMOTE.MESSAGE: " + msg);
+});
+
+casper.on("page.error", function(msg, trace) {
+  this.echo("PAGE.ERROR: " + msg);
+  this.echo("TRACE:");
+  for (var i = 0; i < trace.length; i++) {
+    var trec = trace[i];
+    this.echo("file: " + trec.file + " , line: " + trec.line + " , function: " + trec.function);
+  }
+  this.die("TRACE END and die");
+});
+
+casper.on('step.error', function(err) {
+  this.die("STEP.ERROR: " + err);
+});
+
+casper.on("run.complete", function() {
+    casper.echo("CASPER RUN.COMPLETE")   
+});
+
+// page DOM環境から渡されたスクリプトの実行
+//
+// page DOM環境から渡されたデータは、「remARGS」で参照可能
+//
+casper.on('remote.callback', function(data) {
+  this.echo("REMOTE.CALLBACK:");
+//  this.echo(JSON.stringify(data)); 
+  var command = data.command;
+  var remARGS = data.remARGS;
+
+  this.echo("REMOTE.CALLBACK: <command is as follows>");
+  this.echo(command);
+//  this.echo("<remARGS is as follows>");
+//  this.echo(JSON.stringify(remARGS)); 
+
+  eval(command);
+
+  this.echo("REMOTE.CALLBACK END");
+});
+
+
+// 処理スタート
+casper.start();
+casper.viewport(1024, 768);
+casper.open(URL);
+
+// login
+casper.then(function() {
+    casper.echo("■DIGAログイン開始");
+    casper.withFrame(0, function() {
+        this.fillSelectors('form[name="login_frm"]', {
+            'input[name="passwd"]': PASS
+        }, true);
+    });
+    casper.wait(5000);
+});
+
+// 番組編集画面表示
+casper.then(function() {
+    casper.echo("■番組編集画面開始");
+    casper.withFrame("leftframe", function() {
+        this.mouse.click('input[name="Image_DTitle"]');
+    });
+    casper.wait(5000);
+});
+
+// 番組情報取出し
+casper.then(function() {
+    casper.echo("■番組情報抽出開始");
+    casper.evaluate(getTinfo)
+    casper.wait(600000)
+});
+
+casper.then(function() {
+    casper.echo("■ログアウト開始");
+    casper.withFrame("leftframe", function() {
+        this.mouse.click('input[name="Image_Logout"]');
+    });
+});
+
+
+casper.run();
+
+
+function getTinfo() {
+///////////////////////////////////////////////////////////////////////
 function errorAlert(msg) {
   alert(msg)
   throw new Error(msg)
@@ -87,7 +205,7 @@ function digaExtractTitles() {
 //  var tbodyNode = titleTableNode.children[0]
   var tbodyNode = $rall("tbody")[4]
   var titleNodeA = tbodyNode.children
-  var titleid = $rone("input[name='VT_TITLEID']").value.split(":")
+  var titleid = $rone('input[name="VT_TITLEID"]').value.split(":")
 
   // タイトル行はスキップする(i = 1)。
   for (var i = 1; i < titleNodeA.length; i++) {
@@ -118,8 +236,8 @@ function digaShowTitles(selno) {
 
   var selvalue     = selectOptionNodeA[selno].value
   var digaformNode = $rone('form')
-  var selectNode   = $rone('input[name=cCMD_VT_SELECT]')
-  var listnoNode   = $rone('input[name=cCMD_VT_LISTNO]')
+  var selectNode   = $rone('input[name="cCMD_VT_SELECT"]')
+  var listnoNode   = $rone('input[name="cCMD_VT_LISTNO"]')
 
   selectNode.value = selvalue
   listnoNode.value = selvalue
@@ -191,9 +309,24 @@ function selChecked(selectOptionNodeA) {
   errorAlert("ERROR: selChecked()")
 }
 
+/*
 function digaPostProcessing() {
   digaDumpTitles()
   digaSaveTitles()
+}
+*/
+
+// CasperJS用のPostProcessing
+function digaPostProcessing() {
+  // PhantomJS+CasperJS環境で実行するコマンド
+  var command = "write_txt(remARGS[0]); casper.die('digaGetTitles Finished')";
+  // PhantomJS+CasperJS環境に渡すデータ
+  var remARGS = [tinfo];
+        
+  window.callPhantom({
+    command: command,
+    remARGS: remARGS
+  });
 }
 
 
@@ -201,14 +334,20 @@ function digaGetTitlesStop() {
   stopflag = true
 }
 
-// Get titles from current screen to last screens
-digaGetTitlesStart()
 
+// メイン処理
 // Get all titles
-//digaGetTitlesStart(0)
+digaGetTitlesStart(22)
 
+// Get titles from screen(s) to last screen
+// digaGetTitlesStart(s)
+//
 // Get titles from screen(s) to screen(e)-1
 // digaGetTitlesStart(s, e)
-
+//
 // Get titles from screen(s) to screen(e)-1 with waitms
 // digaGetTitlesStart(s, e, waitms)
+
+///////////////////////////////////////////////////////////////////////
+}
+
