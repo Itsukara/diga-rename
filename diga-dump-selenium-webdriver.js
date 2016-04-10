@@ -1,9 +1,13 @@
-debugger;
 /*
-  CasperJSを使って、DIGAの番組情報を取得するためのスクリプトです。
-  利用に際し、NodeJS、PhantomJS、CasperJSを設定した環境が必要です。
+  selenium-webdriverを使って、DIGAの番組情報を取得するためのスクリプトです。
+  利用に際し、NodeJS、selenium-webdriverを設定した環境が必要です。
   これらが整った環境において、下記コマンドで実行開始願います。
-    casperjs diga-dump-casperjs.js
+    node diga-dump-selenium-webdriver.js
+  
+  ・selenium-webdriverはnpmでインストールできます。
+    npm install selenium-webdriver -g
+    
+  ・Firefoxブラウザを使いますので事前インストール願います。
   
   ・本スクリプト実行前にDIGAの電源を導入願います。
   
@@ -11,121 +15,72 @@ debugger;
 */
 
 // DIGAのURLとログインパスワード
-var URL = "";
+var URL=""
 var PASS = "";
 
-var casper = require("casper").create();
-/*
-var casper = require("casper").create({
-    verbose: true,
-    logLevel: "debug"  
-});
-*/
-
-casper.echo("");
+console.log("");
 if (URL === "" || PASS === "") {
-  casper.die("diga-dump-casperjs.js中でDIGAのURLとログインパスワードを記載してから実行願います。");
-}
-
-// PhantomJSのfsモジュール (nodejsのfsと仕様が異なるので要注意)
-var fs = require("fs");
-
-function capture() {
-    var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".png";
-    casper.capture(fname);
-}
-
-function dump_html() {
-    var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".html";
-    fs.write(fname, casper.getHTML().replace(/&lt;/g, "<").replace(/&gt;/g, ">"));
+  console.log("diga-dump-selenium-webdriver.js中でDIGAのURLとログインパスワードを記載してから実行願います。");
+  process.exit()
 }
 
 function write_txt(txt) {
     var fname = new Date().toISOString().substr(0,23).replace(/:/g, "-") + ".txt";
-    fs.write(fname, txt, 'w');
+    require('fs').writeFile(fname, txt);
 }
 
-// デバッグ用の各種イベント登録
-casper.on('remote.alert', function(msg) {
-  this.echo("REMOTE.ALERT: " + msg);
-});
+var webdriver = require('selenium-webdriver'),
+    By = webdriver.By,
+    until = webdriver.until;
 
-casper.on('remote.message', function(msg) {
-  this.echo("REMOTE.MESSAGE: " + msg);
-});
-
-casper.on("page.error", function(msg, trace) {
-  this.echo("PAGE.ERROR: " + msg);
-  this.echo("TRACE:");
-  for (var i = 0; i < trace.length; i++) {
-    var trec = trace[i];
-    this.echo("file: " + trec.file + " , line: " + trec.line + " , function: " + trec.function);
-  }
-  this.die("TRACE END and die");
-});
-
-casper.on('step.error', function(err) {
-  this.die("STEP.ERROR: " + err);
-});
-
-casper.on("run.complete", function() {
-    casper.echo("CASPER RUN.COMPLETE")   
-});
-
-// page DOM環境から渡されたスクリプトの実行
-//
-// page DOM環境から渡されたデータは、「remARGS」で参照可能
-//
-casper.on('remote.callback', function(data) {
-  this.echo("REMOTE.CALLBACK:");
-//  this.echo(JSON.stringify(data)); 
-  var command = data.command;
-  var remARGS = data.remARGS;
-
-  this.echo("REMOTE.CALLBACK: <command is as follows>");
-  this.echo(command);
-//  this.echo("<remARGS is as follows>");
-//  this.echo(JSON.stringify(remARGS)); 
-
-  eval(command);
-
-  this.echo("REMOTE.CALLBACK END");
-});
-
-
-// 処理スタート
-casper.start();
-casper.viewport(1024, 768);
-casper.open(URL);
+var driver = new webdriver.Builder()
+    .forBrowser('firefox')
+    .build();
+    
+driver.get(URL);
 
 // login
-casper.then(function() {
-    casper.echo("■DIGAログイン開始");
-    casper.withFrame(0, function() {
-        this.fillSelectors('form[name="login_frm"]', {
-            'input[name="passwd"]': PASS
-        }, true);
-    });
-    casper.wait(5000);
+driver.sleep(5000).then(function() {
+  console.log("■DIGAログイン開始");
+
+  // select iframe (frame[0])
+  driver.switchTo().frame(0);
+
+  // input password and submit
+  var element = driver.findElement(By.css('input[name="passwd"]'));
+  element.sendKeys(PASS);
+  element.submit();
 });
 
 // 番組編集画面表示
-casper.then(function() {
-    casper.echo("■番組編集画面開始");
-    casper.withFrame("leftframe", function() {
-        this.mouse.click('input[name="Image_DTitle"]');
-    });
-    casper.wait(5000);
+driver.sleep(5000).then(function() {
+  console.log("■番組編集画面開始");
+
+  // select "leftframe"
+  driver.switchTo().frame("leftframe");
+
+  // click "title edit"
+  var element = driver.findElement(By.css('input[name="Image_DTitle"]'));
+  element.click();
 });
 
 // 番組情報取出し
-casper.then(function() {
-    casper.echo("■番組情報抽出開始");
-    casper.evaluate(getTinfo)
-    casper.wait(600000)
+driver.sleep(5000).then(function() {
+  console.log("■番組情報抽出開始");
+  
+  // select window top
+  driver.switchTo().defaultContent();
+  
+  // set Script Timeout
+  driver.manage().timeouts().setScriptTimeout(600000)
+  // execute getTinfo in browser envrironment
+  driver.executeAsyncScript(getTinfo, []).then(function(tinfo) {
+    write_txt(tinfo)
+    console.log("■番組情報抽出終了");
+  });
 });
 
-casper.run();
+driver.quit();
 
 function getTinfo() {
 ///////////////////////////////////////////////////////////////////////
@@ -312,6 +267,7 @@ function digaPostProcessing() {
 }
 */
 
+/*
 // CasperJS用のPostProcessing
 function digaPostProcessing() {
   // PhantomJS+CasperJS環境で実行するコマンド
@@ -326,15 +282,14 @@ function digaPostProcessing() {
 
   digaLogout()
 }
+*/
 
-/*
 // Selenium webdriver用のPostProcessing
 function digaPostProcessing() {
   // call callback for executeAsyncScript
   digaCallback(tinfo)
   digaLogout()
 }
-*/
 
 function digaLogout() {
   var logout = leftframe.document.querySelector('input[name="Image_Logout"]')

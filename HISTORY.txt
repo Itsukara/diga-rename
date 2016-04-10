@@ -1,4 +1,13 @@
-﻿【2016/4/10】番組情報取得部をCasperJSで記載(試行用)
+﻿【2016/4/10】番組情報取得部をSelenium WebDriverを使って記述
+
+・Webブラウザ操作の自動化ツールのうち、既存Web Browserを
+  操作可能なSelenium WebDriverを使って記述してみました。
+  ・ファイル：diga-dump-selenium-webdriver.js
+
+・これに際して、diga-dump-casperjs.jsも少し修正。
+  (Browser側で実行する関数getTinfo()をできるだけ共通化)
+
+【2016/4/10】番組情報取得部をCasperJSで記述
 
 ・NodeJSやCasperJSの勉強の一環として、DIGAから番組情報を
   取得する部分を、CasperJSで記載してみました。
@@ -6,7 +15,7 @@
   
 ・これに際して、元々のファイル(diga-dump.js)のバグを修正。
   (chromeのDeveloper toolsではエラーが出ないが、
-   CasperJSではエラーが出たため9
+   CasperJSではエラーが出ため)
 
 【2016/03/18】番組名書換え中止後に再開した場合の処理を変更
 
