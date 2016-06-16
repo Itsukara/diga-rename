@@ -5,7 +5,8 @@
 //　 3.画面下の「No.選択:」セレクタで、ダンプを開始したい画面を表示。
 //　　（これを行わない場合は、先頭番組以降の全ての情報をダンプ)
 //　 4.F12キーを押してChromeの「Developer Tools」を表示。
-//　 5.diga-dump.jsの内容をコピーして、コンソールにペーストする。
+//　 5.画面左下のConsoleの下にあるセレクタで"top"を選択。
+//　 6.diga-dump.jsの内容をコピーして、コンソールにペーストする。
 //　　・ペーストしたJavascriptのコードが、表示されている画面以降の
 //　　　全ての番組情報を自動的に表示・抽出し、ファイル「tinfo.txt」に保管。
 //・途中で中止したい場合は、コンソールに下記を打ち込む。
@@ -15,6 +16,16 @@
 //　・digaGetTitlesStart(s)　 ：s画面目以降の番組情報ををダンプ
 //　・digaGetTitlesStart(s, e)：s画面目～(e-1)画面目の番組情報ををダンプ
 //　※s画面目とは、「No.選択:」セレクの何番目かとうこと(0から始まる)
+//・このコードをDeveloper ToolsのSnippetsに登録しておくと便利です。
+//　一度登録すると、登録したSinppets名の上で右クリックしてRunを選択するだけで実行可能です。
+//　登録方法は下記です。
+//　- Developer Toolsの上部にあるメニューでSoucesを選ぶ。
+//　- 画面左上のSnippetsを選ぶ。
+//　- Snippetsの下の部分で右クリックして表示されるNewを選択する。
+//　- 新規Snippets名を記載する(例えばdiga-dump)。
+//　- Snippets名の右側の真っ白な広い欄に本コードをペーストする。
+//　- ペーストした欄の上を見るとSnippet名が表示されているので、
+//　　このSnippet名で右クリックして、saveを選択してコードを保管する。
 
 "use strict"
 
@@ -79,8 +90,8 @@ function digaGetTitles() {
 
 // 表示中の画面から番組情報を抽出
 function digaExtractTitles() {
-  selectOptionNodeA = $rall("select option")
-  console.log("digaExtractTitles:", selno, "(", selectOptionNodeA[selno].innerHTML, ")")
+//  selectOptionNodeA = $rall("select option")
+//  console.log("digaExtractTitles:", selno, "(", selectOptionNodeA[selno].innerHTML, ")")
 
   // 番組一覧表を取得
 //  var titleTableNode = $rall("table table")[2]
