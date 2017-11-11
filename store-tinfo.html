@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>STORE TINFO</title>
+    <meta charset="utf-8">
+  </head>
+
+  <body>
+    <h2>番組名変更情報をブラウザのlocalStorageに保管するツール</h2>
+    diga-dump.js出力内の番組名のみ変更して下記に張り付け、「保管」ボタンを押してください。<br/>
+    その後、diga-rename.htmlで番組名書換を行ってください。<br/>
+    <button type="button" onclick="outputTinfo()">保管</button><br>
+
+    <div class="tinfodiv">
+       【番組情報】<br>
+         <textarea class="tinfo" cols="120" rows="80"></textarea>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="store-tinfo.js"></script>
+
+  </body>
+</html>
