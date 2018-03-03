@@ -16,7 +16,7 @@
       }
       .container1 {
         display: table-cell;
-        min-width: 470px;
+        min-width: 520px;
       }
       .container2 {
         display: table-cell;
@@ -27,7 +27,7 @@
 
       .tinfo {font-size: 100%;}
       .ruleJSON {
-        width: 450px;
+        width: 500px;
         font-size: 80%; 
       }
       .rule {font-size: 80%; }
@@ -93,14 +93,17 @@
       <div class="container1">
         <div class="ruleJSON">
           【書換え規則(JSON)】<br>
-          <textarea class="ruleJSON" cols="70" rows="10"></textarea>
+          <textarea class="ruleJSON" cols="90" rows="10"></textarea>
         </div>
 
         <div class="ruleList">
           【書換え規則】<br>
           <div class="rule"><input type="text" size="20">　(<input type="checkbox">正規表現)
             →
-            <input type="text" size="20"></div>
+            <input type="text" size="20">
+            <button type="button" onclick="rmRule(this)">r</button>
+            <button type="button" onclick="addRule(this)">a</button>
+          </div>
         </div>
       </div>
 

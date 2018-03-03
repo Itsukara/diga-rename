@@ -52,6 +52,9 @@ var ruleInitNum   = 30
 // 書換え規則の最後に予備で追加する規則の数
 var ruleAddNum    = 5
 
+// 規則追加の際のテンプレート
+var ruleTemplate  = null
+
 // 画面初期表示時の処理
 window.onload = function() {
   if (localStorage.digaRuleJSON) {
@@ -88,7 +91,7 @@ function inputRuleJSON() {
 // 画面上の書換え規則の数をn個まで増加(減らす処理は未実装)
 function increaseRules(n) {
   var ruleNodeA     = $all("div.rule")
-  var ruleTemplate  = ruleNodeA[0]
+  ruleTemplate  = ruleNodeA[0]
   var newRuleNodes  = document.createDocumentFragment()
   for (var i = ruleNodeA.length; i < n; i++) {
     var newRuleNode = ruleTemplate.cloneNode(true)
@@ -131,6 +134,23 @@ function rmBlankHeaderRules(ruleAA) {
   return newRules
 }
 
+// 書換え規則を削除
+function rmRule(btnNode) {
+  var ruleA = btnNode.parentNode
+  ruleA.parentNode.removeChild(ruleA)
+}
+
+// 書換え規則を下に追加
+function addRule(btnNode) {
+  var ruleA = btnNode.parentNode
+  var newRuleNode = ruleTemplate.cloneNode(true)
+  var nextNode = ruleA.nextSibling
+  if (nextNode) {
+    ruleA.parentNode.insertBefore(newRuleNode, nextNode)
+  } else {
+    ruleA.parentNode.appendChild(newRuleNode)
+  }
+}
 
 // 書換え規則を画面上に反映
 function showRules(ruleAA) {
