@@ -78,8 +78,9 @@ function inputRuleJSON() {
     return
   }
   var ruleAA = JSON.parse(ruleJSON)
+  ruleAA = cleanupRules(ruleAA)
 
-  increaseRules(ruleAA.length + ruleAddNum)
+  increaseRules(ruleAA.length + ruleAddNum * 2)
   initRules()
   showRules(ruleAA)
 }
@@ -107,20 +108,44 @@ function initRules() {
   }
 }
 
+// 書換え規則をクリーンアップ
+function cleanupRules(ruleAA) {
+  var newRules = rmBlankHeaderRules(ruleAA)
+  return rmBlankHeaderRules(newRules.reverse()).reverse()
+}
+
+// 先頭の空規則をスキップ
+function rmBlankHeaderRules(ruleAA) {
+  var i;
+  for (i = 0; i < ruleAA.length; i++) {
+    var ruleA = ruleAA[i]
+    if (ruleA && ruleA[0]) {
+      break
+    }
+  }
+  var newRules = []
+  for (; i < ruleAA.length; i++) {
+    newRules.push(ruleAA[i])
+  }
+
+  return newRules
+}
+
+
 // 書換え規則を画面上に反映
 function showRules(ruleAA) {
   var ruleNodeA = $all("div.rule")
   for (var i = 0; i < ruleAA.length; i++) {
     var ruleA = ruleAA[i]
     if (ruleA && ruleA[0]) {
-      var r          = ruleA[0]
+      var l          = ruleA[0]
       var regexpflag = ruleA[1]
-      var l          = ruleA[2]
+      var r          = ruleA[2]
 
-      var ruleChildren = ruleNodeA[i].children;
-      ruleChildren[0].value   = r;
+      var ruleChildren = ruleNodeA[i + ruleAddNum].children;
+      ruleChildren[0].value   = l;
       ruleChildren[1].checked = regexpflag;
-      ruleChildren[2].value   = l;
+      ruleChildren[2].value   = r;
     }
   }
 }
@@ -129,10 +154,20 @@ function showRules(ruleAA) {
 function renameTinfo() {
   var ruleAA = getRuleAA()
   var resultAA = deepCopyAA(tinfoAA)
+
+  var ruleNodeA = $all("div.rule")
+  for (var i = 0; i < ruleAA.length; i++) {
+    var ruleNode = ruleNodeA[i].children[0]
+    ruleNode.style = "color: " + "black"
+  }
+  
   for (var i = 0; i < ruleAA.length; i++) {
     var ruleA = ruleAA[i]
     if (ruleA) {
-      applyRule(ruleA, resultAA)
+      if (applyRule(ruleA, resultAA)) {
+        var ruleNode = ruleNodeA[i].children[0]
+        ruleNode.style = "color: " + "blue"
+      }
     }
   }
   resultAA.sort(compTinfoAbyTitle)
@@ -252,13 +287,13 @@ function getRuleAA() {
 
   for (var i = 0; i < ruleNodeA.length; i++) {
     var ruleChildren = ruleNodeA[i].children;
-    var r          = ruleChildren[0].value;
+    var l          = ruleChildren[0].value;
     var regexpflag = ruleChildren[1].checked;
-    var l          = ruleChildren[2].value;
-    if (r) {
+    var r          = ruleChildren[2].value;
+    if (l) {
       // resultAA.push()は意図的に使わない
       // (書換え規則未記載の部分を次回利用時に再現するため)
-      resultAA[i] = [r, regexpflag, l]
+      resultAA[i] = [l, regexpflag, r]
     }
   }
 
@@ -267,19 +302,26 @@ function getRuleAA() {
 
 // 書換え規則を番組情報(Array of Array形式)に適用
 function applyRule(ruleA, tinfoAA) {
-  var r          = ruleA[0]
+  var l          = ruleA[0]
   var regexpflag = ruleA[1]
-  var l          = ruleA[2]
+  var r          = ruleA[2]
 
-  if (r) {
+  var changed = false
+  if (l) {
   	if (regexpflag) {
-      r = new RegExp(r)
+      l = new RegExp(l)
     }
     for (var i = 0; i < tinfoAA.length; i++) {
       var rinfoA = tinfoAA[i]
-      rinfoA[colOfTitle] = rinfoA[colOfTitle].replace(r, l)
+      var oldTitle = rinfoA[colOfTitle]
+      var newTitle = oldTitle.replace(l, r)
+      if (oldTitle != newTitle) {
+        changed = true
+      }
+      rinfoA[colOfTitle] = newTitle
     }
   }
+  return changed
 }
 
 // 書換え規則をJSON化して画面表示、ブラウザのlocalStorageに保管
