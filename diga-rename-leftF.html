@@ -22,11 +22,10 @@
   【使い方】
   1.以下の欄にDIGAのIPアドレスを記入し、「DIGAに接続」ボタンを押す。
   2.右側フレームにDIGAのログイン画面が出るのを待ちログイン。
+    ※ログイン画面表示まで30秒以上掛かる場合がある。
   3.右側フレームで「番組編集ボタン」を押し「番組編集」画面の表示を待つ。
   4.「番組編集」画面が表示されたら、左側フレームの「開始」ボタンを押す。
   【注意】
-  ・DIGAのログイン画面が出るまで非常に時間が掛かることがあります。
-    (最大で２～３分間お待ち願います）
   ・途中で中止する際は、「中止」ボタンを押してください。
   ・中止後に再度「開始」する場合、処理中番組名からやり直します。
   ・「変更済みの件数」欄の値は書き換え可能です。
@@ -38,7 +37,7 @@
     <div class="input">
       DIGAのIPアドレス：<input type="text" name="digaIP" size="20"> 
         <button type="button" onclick="connectDIGA()">DIGAに接続</button><br>
-      DIGA待ち時間(秒)：<input type="number" class="num" name="waitsec" value="8" min="1" max="9" oninput="updateStatus()">　　
+      DIGA待ち時間(秒)：<input type="number" class="num" name="waitsec" value="8" min="1" max="20" oninput="updateStatus()">　　
         <button type="button" onclick="digaRewriteStart()">開始</button> 
         <button type="button" onclick="digaRwriteStop()">中止</button><br>
     </div>
